@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
 	compileSdkVersion 26
@@ -18,7 +19,7 @@ android {
 			shrinkResources true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
-		debug{
+		debug {
 			minifyEnabled true
 			shrinkResources true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -39,9 +40,7 @@ dependencies {
 	implementation 'com.google.android.apps.muzei:muzei-api:2.0'
 	implementation 'org.jsoup:jsoup:1.10.3'
 
-	androidTestImplementation 'com.android.support.test:runner:1.0.1'
-	androidTestImplementation'com.android.support.test.espresso:espresso-core:3.0.1'
-	testImplementation 'junit:junit:4.12'
+//	androidTestImplementation 'com.android.support.test:runner:1.0.1'
+//	androidTestImplementation'com.android.support.test.espresso:espresso-core:3.0.1'
+//	testImplementation 'junit:junit:4.12'
 }
-
-apply plugin: 'kotlin-android-extensions'
