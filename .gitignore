@@ -1,0 +1,31 @@
+# OS
+.DS_Store
+.Trashes
+.Spotlight-V100
+.fseventsd
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# Intellij
+*.iml
+.idea/
+
+# SublimeText
+*.sublime-workspace
+
+# Java class files
+*.class
+
+# Gradle
+.gradle/
+build/
+
+# Local configuration file
+local.properties
+
+# Android Studio captures folder
+captures/
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild

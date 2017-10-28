@@ -1,0 +1,13 @@
+<resources>
+
+	<style name="AppTheme" parent="PreferenceFixTheme.Light.NoActionBar">
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorAccent</item>
+		<item name="colorAccent">@color/colorAccent</item>
+		<item name="fontFamily">@font/inconsolata</item>
+		<item name="android:textColor">@color/colorAccent</item>
+		<item name="android:textColorPrimary">@color/colorAccent</item>
+		<item name="android:textColorSecondary">@color/colorAccent</item>
+		<item name="android:windowBackground">@color/colorPrimary</item>
+	</style>
+</resources>
