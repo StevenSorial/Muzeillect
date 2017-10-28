@@ -4,7 +4,7 @@
 	<string name="label">@string/app_name</string>
 
 	<string name="pref_key_wifi">pref_wifi</string>
-	<string name="pref_key_interval">pref_wifi</string>
+	<string name="pref_key_interval">pref_interval</string>
 
 	<string name="pref_title_wifi">Only on Wi-Fi</string>
 	<string name="pref_title_interval">Update Interval</string>

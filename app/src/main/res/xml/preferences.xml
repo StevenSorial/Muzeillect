@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<android.support.v7.preference.PreferenceScreen-->
-<PreferenceScreen
+<android.support.v7.preference.PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<SwitchPreferenceCompat
-		android:defaultValue="false"
+		android:defaultValue=""
 		android:key="@string/pref_key_wifi"
 		android:title="@string/pref_title_wifi"/>
 	<ListPreference
 		android:defaultValue="@string/pref_interval_value_3_hours"
 		android:dialogTitle=""
-		android:summary="@string/pref_interval_label_30_minutes"
 		android:entries="@array/pref_labels_interval"
 		android:entryValues="@array/pref_values_interval"
-		android:key="update_interval"
+		android:key="@string/pref_key_interval"
+		android:summary="%s"
 		android:title="@string/pref_title_interval"/>
 
-</PreferenceScreen>
+</android.support.v7.preference.PreferenceScreen>
