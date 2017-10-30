@@ -37,7 +37,7 @@ private fun buildStyledToast(context: Context, message: String) {
 }
 
 fun showToast(context: Context, message: String) {
-	if (Looper.myLooper() == Looper.myLooper()) {
+	if (Looper.myLooper() == Looper.getMainLooper()) {
 		buildStyledToast(context, message)
 		return
 	}
