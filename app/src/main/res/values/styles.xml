@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
 	<style name="AppTheme" parent="PreferenceFixTheme.Light.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimary</item>
