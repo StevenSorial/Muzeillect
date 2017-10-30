@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
 	<style name="AppTheme" parent="PreferenceFixTheme.Light.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimary</item>
@@ -9,6 +9,7 @@
 		<item name="android:textColorPrimary">@color/colorAccent</item>
 		<item name="android:textColorSecondary">@color/colorAccent</item>
 		<item name="android:windowBackground">@color/colorPrimary</item>
+		<item name="android:navigationBarColor" tools:targetApi="lollipop">@color/colorAccent</item>
 	</style>
 
 	<style name="TranslucentTheme" parent="AppTheme">

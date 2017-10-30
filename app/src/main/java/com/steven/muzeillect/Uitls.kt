@@ -69,3 +69,7 @@ fun isPermissionGranted(context: Context, permission: String): Boolean {
 	context.startActivity(i)
 	return false
 }
+
+fun createArchillectLink(token: String): String {
+	return BASE_URL + token
+}

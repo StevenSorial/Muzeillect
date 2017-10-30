@@ -52,7 +52,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		super.onCustomCommand(id)
 		when (id) {
 			COMMAND_ID_SAVE -> saveImage()
-			COMMAND_ID_SHARE -> showToast(this, "Test")
+			COMMAND_ID_SHARE -> shareImage()
 		}
 	}
 
@@ -82,6 +82,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
 		publishArtwork(Artwork.Builder()
 				.title(newToken.toString())
+				.byline("Archillect")
 				.imageUri(Uri.parse(newImgUrl))
 				.token(newToken.toString())
 				.viewIntent(Intent(Intent.ACTION_VIEW,
@@ -111,7 +112,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	private fun getImageURL(token: Int): String {
 		try {
 			Log.d(TAG, "Generating Image Token")
-			val doc = Jsoup.connect(BASE_URL + token).get()
+			val doc = Jsoup.connect(createArchillectLink(token.toString())).get()
 			val img = doc.select("#ii").first()
 			val imgUrl = img.attr("src")
 			Log.d(TAG, "Generated Image URL: $imgUrl")
@@ -147,6 +148,10 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private fun saveImage() {
+		if (currentArtwork == null) {
+			Log.d(TAG, "no artwork available")
+			return
+		}
 		if (!isExternalStorageWritable()) {
 			Log.d(TAG, "Storage is Not Writable")
 			return
@@ -204,5 +209,16 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 				showToast(this, getString(R.string.message_save_error))
 			}
 		}
+	}
+
+	private fun shareImage() {
+		if (currentArtwork == null) return
+		if (currentArtwork.token == null) return
+		val i = Intent()
+		i.action = Intent.ACTION_SEND
+		i.putExtra(Intent.EXTRA_TEXT, createArchillectLink(currentArtwork.token))
+		i.type = "text/plain"
+		startActivity(Intent.createChooser(i, getString(R.string.action_share)).setFlags(Intent
+				.FLAG_ACTIVITY_NEW_TASK))
 	}
 }
