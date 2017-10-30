@@ -7,7 +7,7 @@
 		android:key="@string/pref_key_wifi"
 		android:title="@string/pref_title_wifi"/>
 	<ListPreference
-		android:defaultValue="@string/pref_interval_value_3_hours"
+		android:defaultValue="@string/pref_interval_value_default"
 		android:dialogTitle=""
 		android:entries="@array/pref_labels_interval"
 		android:entryValues="@array/pref_values_interval"

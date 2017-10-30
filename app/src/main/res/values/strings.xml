@@ -3,6 +3,9 @@
 	<string name="desc">Images from Archillect</string>
 	<string name="label">@string/app_name</string>
 
+	<string name="action_save">Save Image</string>
+	<string name="action_share">Share Image</string>
+
 	<string name="pref_key_wifi">pref_wifi</string>
 	<string name="pref_key_interval">pref_interval</string>
 
@@ -18,5 +21,11 @@
 	<string name="pref_interval_value_1_hours">60</string>
 	<string name="pref_interval_value_3_hours">180</string>
 	<string name="pref_interval_value_6_hours">360</string>
+
+	<string name="pref_interval_value_default">@string/pref_interval_value_3_hours</string>
+
+	<string name="message_save_exists">File already exists</string>
+	<string name="message_save_complete">Image Saved</string>
+	<string name="message_save_error">Saving Error</string>
 
 </resources>
