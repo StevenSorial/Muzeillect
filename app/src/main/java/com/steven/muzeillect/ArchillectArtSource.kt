@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
@@ -72,11 +73,10 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		val newToken: Int = getRandomToken()
 		val newImgUrl: String = getImageURL(newToken)
 
-		if (Integer.parseInt(oldToken) == newToken || !isJPGOrPNG(newImgUrl)) {
+		if (oldToken.toInt() == newToken || !isJPGOrPNG(newImgUrl)) {
+			Log.d(TAG, "Invalid Format..Retrying")
 			throw RetryException()
 		}
-		Log.d(TAG, "New Image Token: $newToken")
-		Log.d(TAG, "New Image URL: $newImgUrl")
 
 		checkIfUrlExist(newImgUrl)
 
@@ -89,7 +89,6 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 						Uri.parse(BASE_URL + newToken)))
 				.build())
 		scheduleUpdate(System.currentTimeMillis() + (updateInterval!! * MINUTE_MILLIS))
-
 	}
 
 	@Throws(RemoteMuzeiArtSource.RetryException::class)
@@ -98,7 +97,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			Log.d(TAG, "Generating Image Token")
 			val doc = Jsoup.connect(BASE_URL).get()
 			val element = doc.select("div.overlay").first()
-			val lastToken = Integer.parseInt(element.text())
+			val lastToken = element.text().toInt()
 			val randToken = Random().nextInt(lastToken + 1)
 			Log.d(TAG, "Generated Image Token: " + randToken)
 			return randToken
@@ -148,7 +147,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private fun saveImage() {
-		if (currentArtwork == null) {
+		if (currentArtwork?.token == null) {
 			Log.d(TAG, "no artwork available")
 			return
 		}
@@ -212,8 +211,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private fun shareImage() {
-		if (currentArtwork == null) return
-		if (currentArtwork.token == null) return
+		if (currentArtwork?.token == null) return
 		val i = Intent()
 		i.action = Intent.ACTION_SEND
 		i.putExtra(Intent.EXTRA_TEXT, createArchillectLink(currentArtwork.token))
