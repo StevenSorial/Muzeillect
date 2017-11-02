@@ -5,18 +5,20 @@ package com.steven.muzeillect
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Point
 import android.net.ConnectivityManager
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
+import android.view.WindowManager
 import android.widget.Toast
 import com.muddzdev.styleabletoastlibrary.StyleableToast
 
 const val SECOND_MILLIS: Long = 1000
 const val MINUTE_MILLIS: Long = 60 * SECOND_MILLIS
-// const val HOUR_MILLIS: Long = 60 * MINUTE_MILLIS
+const val HOUR_MILLIS: Long = 60 * MINUTE_MILLIS
 
 const val BASE_URL = "http://archillect.com/"
 
@@ -24,6 +26,9 @@ const val KEY_PERMISSION: String = "permission"
 
 const val EXTENSION_JPG = ".jpg"
 const val EXTENSION_PNG = ".png"
+
+const val MINIMUM_WIDTH = 1000
+const val MINIMUM_HEIGHT = 1000
 
 private fun buildStyledToast(context: Context, message: String) {
 	return StyleableToast.Builder(context)
@@ -68,6 +73,13 @@ fun isPermissionGranted(context: Context, permission: String): Boolean {
 	i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 	context.startActivity(i)
 	return false
+}
+
+fun getDisplaySize(context: Context): Point {
+	val window = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+	val point = Point()
+	window.defaultDisplay.getRealSize(point)
+	return point
 }
 
 fun createArchillectLink(token: String): String {

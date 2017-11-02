@@ -32,6 +32,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	private var pref: SharedPreferences? = null
 	private var updateInterval: Long? = null
 	private var isOnWiFiOnly: Boolean? = null
+	private var isHDOnly: Boolean? = null
 
 	override fun onCreate() {
 		super.onCreate()
@@ -47,6 +48,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		updateInterval = pref!!.getString(getString(R.string.pref_key_interval), getString(R
 				.string.pref_interval_value_default)).toLong()
 		isOnWiFiOnly = pref!!.getBoolean(getString(R.string.pref_key_wifi), false)
+		isHDOnly = pref!!.getBoolean(getString(R.string.pref_key_hd), false)
 	}
 
 	override fun onCustomCommand(id: Int) {
@@ -64,7 +66,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
 		if (isOnWiFiOnly!! && !isConnectedWifi(this)) {
 			Log.d(TAG, "Update on wifi only..Rescheduling")
-			throw RetryException()
+			scheduleUpdate(System.currentTimeMillis()
+					+ (updateInterval!! * MINUTE_MILLIS))
+			return
 		}
 
 		val oldToken: String = currentArtwork?.token ?: "-1"
@@ -78,7 +82,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			throw RetryException()
 		}
 
-		checkIfUrlExist(newImgUrl)
+		checkImageSize(newImgUrl)
 
 		publishArtwork(Artwork.Builder()
 				.title(newToken.toString())
@@ -122,10 +126,6 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		}
 	}
 
-	private fun isJPGOrPNG(imgURL: String): Boolean {
-		return isJPG(imgURL) || isPNG(imgURL)
-	}
-
 	private fun isJPG(imgURL: String): Boolean {
 		return EXTENSION_JPG in imgURL
 	}
@@ -134,14 +134,28 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		return EXTENSION_PNG in imgURL
 	}
 
+	private fun isJPGOrPNG(imgURL: String): Boolean {
+		return isJPG(imgURL) || isPNG(imgURL)
+	}
+
 	@Throws(RemoteMuzeiArtSource.RetryException::class)
-	private fun checkIfUrlExist(URLString: String) {
+	private fun checkImageSize(URLString: String) {
 		try {
 			val connection = URL(URLString).openConnection() as HttpURLConnection
-			connection.connect()
+			val bitmap = BitmapFactory.decodeStream(connection.inputStream)
+			val h = bitmap.height
+			val w = bitmap.width
+			Log.d(TAG, "Image height: $h")
+			Log.d(TAG, "Image width: $w")
+			Log.d(TAG, "Device Resolution: " + getDisplaySize(this).toString())
+
+			if (isHDOnly!! && (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH)) {
+				Log.d(TAG, "Resolution is low..Retrying")
+				throw RetryException()
+			}
 			Log.d(TAG, "response code: " + connection.responseCode)
 		} catch (e: IOException) {
-			Log.e(TAG, "Error trying connecting to url", e)
+			Log.e(TAG, "Error trying connecting to url..Retrying", e)
 			throw RetryException()
 		}
 	}
@@ -171,9 +185,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val os: FileOutputStream
 			val bitmap = MuzeiContract.Artwork.getCurrentArtworkBitmap(this)
 			val folder = File(Environment.getExternalStoragePublicDirectory(Environment
-					.DIRECTORY_PICTURES).toString())
+					.DIRECTORY_PICTURES), "Archillect")
 			if (!folder.exists()) {
-				Log.d(TAG, "creating Pictures Folder")
+				Log.d(TAG, "creating directory")
 				folder.mkdirs()
 			}
 			val file = File(folder, currentArtwork.token + ext)

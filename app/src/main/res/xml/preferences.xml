@@ -3,9 +3,13 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<SwitchPreferenceCompat
-		android:defaultValue=""
+		android:defaultValue="false"
 		android:key="@string/pref_key_wifi"
 		android:title="@string/pref_title_wifi"/>
+	<SwitchPreferenceCompat
+		android:defaultValue="false"
+		android:key="@string/pref_key_hd"
+		android:title="@string/pref_title_hd"/>
 	<ListPreference
 		android:defaultValue="@string/pref_interval_value_default"
 		android:dialogTitle=""
