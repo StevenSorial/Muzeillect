@@ -16,9 +16,10 @@
 		android:theme="@style/AppTheme">
 		<service
 			android:name=".ArchillectArtSource"
-			android:description="@string/desc"
+			android:description="@string/source_desc"
 			android:icon="@drawable/logo"
-			android:label="@string/app_name">
+			android:label="@string/source_label">
+
 			<intent-filter>
 				<action android:name="com.google.android.apps.muzei.api.MuzeiArtSource"/>
 			</intent-filter>
