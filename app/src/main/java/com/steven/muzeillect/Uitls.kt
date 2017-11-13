@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Point
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,8 @@ import android.support.v4.content.res.ResourcesCompat
 import android.view.WindowManager
 import android.widget.Toast
 import com.muddzdev.styleabletoastlibrary.StyleableToast
+import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 
 const val SECOND_MILLIS: Long = 1000
 const val MINUTE_MILLIS: Long = 60 * SECOND_MILLIS
@@ -86,4 +89,12 @@ fun getDisplaySize(context: Context): Point {
 
 fun createArchillectLink(token: String): String {
 	return BASE_URL + token
+}
+
+fun  getRandomInt(bound: Int): Int {
+	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+		return ThreadLocalRandom.current().nextInt(bound)
+	} else {
+		return Random().nextInt(bound)
+	}
 }

@@ -19,7 +19,6 @@ import java.io.IOException
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 import kotlin.concurrent.thread
 
 class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
@@ -102,7 +101,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val doc = Jsoup.connect(BASE_URL).get()
 			val element = doc.select("div.overlay").first()
 			val lastToken = element.text().toInt()
-			val randToken = Random().nextInt(lastToken + 1)
+			val randToken = getRandomInt(lastToken) + 1
 			Log.d(TAG, "Generated Image Token: " + randToken)
 			return randToken
 		} catch (e: Exception) {
@@ -145,8 +144,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val bitmap = BitmapFactory.decodeStream(connection.inputStream)
 			val h = bitmap.height
 			val w = bitmap.width
-			Log.d(TAG, "Image height: $h")
-			Log.d(TAG, "Image width: $w")
+			Log.d(TAG, "Image Resolution: $w x $h")
 			Log.d(TAG, "Device Resolution: " + getDisplaySize(this).toString())
 
 			if (isHDOnly!! && (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH)) {
