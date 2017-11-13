@@ -20,6 +20,8 @@ const val SECOND_MILLIS: Long = 1000
 const val MINUTE_MILLIS: Long = 60 * SECOND_MILLIS
 const val HOUR_MILLIS: Long = 60 * MINUTE_MILLIS
 
+const val RETRY_INTERVAL: Int = 15
+
 const val BASE_URL = "http://archillect.com/"
 
 const val KEY_PERMISSION: String = "permission"

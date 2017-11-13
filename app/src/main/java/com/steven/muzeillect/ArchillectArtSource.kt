@@ -67,7 +67,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		if (isOnWiFiOnly!! && !isConnectedWifi(this)) {
 			Log.d(TAG, "Update on wifi only..Rescheduling")
 			scheduleUpdate(System.currentTimeMillis()
-					+ (updateInterval!! * MINUTE_MILLIS))
+					+ (RETRY_INTERVAL * MINUTE_MILLIS))
 			return
 		}
 
@@ -171,7 +171,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		}
 		if (!isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) return
 
-		thread(start = true) {
+		thread {
 			Log.d(TAG, "Saving Image")
 			val format: Bitmap.CompressFormat
 			val ext: String
