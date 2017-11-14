@@ -9,9 +9,9 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import android.preference.PreferenceManager
-import android.util.Log
 import com.google.android.apps.muzei.api.*
 import org.jsoup.Jsoup
+import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -23,8 +23,6 @@ import kotlin.concurrent.thread
 
 class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
-	private val TAG = ArchillectArtSource::class.java.simpleName
-
 	private val COMMAND_ID_SHARE = 111
 	private val COMMAND_ID_SAVE = 222
 
@@ -35,7 +33,8 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
 	override fun onCreate() {
 		super.onCreate()
-		Log.d(TAG, "Service Created")
+
+		Timber.d("Service Created")
 
 		setUserCommands(
 				UserCommand(MuzeiArtSource.BUILTIN_COMMAND_ID_NEXT_ARTWORK),
@@ -61,23 +60,23 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	@Throws(RemoteMuzeiArtSource.RetryException::class)
 	override fun onTryUpdate(p0: Int) {
 
-		Log.d(TAG, "Trying to update")
+		Timber.d("Trying to update")
 
 		if (isOnWiFiOnly!! && !isConnectedWifi(this)) {
-			Log.d(TAG, "Update on wifi only..Rescheduling")
+			Timber.d("Update on wifi only..Rescheduling")
 			scheduleUpdate(System.currentTimeMillis()
 					+ (RETRY_INTERVAL * MINUTE_MILLIS))
 			return
 		}
 
 		val oldToken: String = currentArtwork?.token ?: "-1"
-		Log.d(TAG, "old token = $oldToken")
+		Timber.d("old token = $oldToken")
 
 		val newToken: Int = getRandomToken()
 		val newImgUrl: String = getImageURL(newToken)
 
 		if (oldToken.toInt() == newToken || !isJPGOrPNG(newImgUrl)) {
-			Log.d(TAG, "Invalid Format..Retrying")
+			Timber.d("Invalid Format..Retrying")
 			throw RetryException()
 		}
 
@@ -97,15 +96,15 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	@Throws(RemoteMuzeiArtSource.RetryException::class)
 	private fun getRandomToken(): Int {
 		try {
-			Log.d(TAG, "Generating Image Token")
+			Timber.d("Generating Image Token")
 			val doc = Jsoup.connect(BASE_URL).get()
 			val element = doc.select("div.overlay").first()
 			val lastToken = element.text().toInt()
 			val randToken = getRandomInt(lastToken) + 1
-			Log.d(TAG, "Generated Image Token: " + randToken)
+			Timber.d("Generated Image Token: $randToken")
 			return randToken
 		} catch (e: Exception) {
-			Log.e(TAG, "Error generating Token", e)
+			Timber.e(e, "Error generating Token")
 			throw RetryException()
 		}
 	}
@@ -113,14 +112,14 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	@Throws(RemoteMuzeiArtSource.RetryException::class)
 	private fun getImageURL(token: Int): String {
 		try {
-			Log.d(TAG, "Generating Image Token")
+			Timber.d("Generating Image Token")
 			val doc = Jsoup.connect(createArchillectLink(token.toString())).get()
 			val img = doc.select("#ii").first()
 			val imgUrl = img.attr("src")
-			Log.d(TAG, "Generated Image URL: $imgUrl")
+			Timber.d("Generated Image URL: $imgUrl")
 			return imgUrl
 		} catch (e: Exception) {
-			Log.e(TAG, "Error generating Image URL", e)
+			Timber.e(e, "Error generating Image URL")
 			throw RetryException()
 		}
 	}
@@ -144,33 +143,33 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val bitmap = BitmapFactory.decodeStream(connection.inputStream)
 			val h = bitmap.height
 			val w = bitmap.width
-			Log.d(TAG, "Image Resolution: $w x $h")
-			Log.d(TAG, "Device Resolution: " + getDisplaySize(this).toString())
+			Timber.d("Image Resolution: $w x $h")
+			Timber.d("Device Resolution: ${getDisplaySize(this)}")
 
 			if (isHDOnly!! && (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH)) {
-				Log.d(TAG, "Resolution is low..Retrying")
+				Timber.d("Resolution is low..Retrying")
 				throw RetryException()
 			}
-			Log.d(TAG, "response code: " + connection.responseCode)
+			Timber.d("response code: ${connection.responseCode}")
 		} catch (e: IOException) {
-			Log.e(TAG, "Error trying connecting to url..Retrying", e)
+			Timber.e(e, "Error trying connecting to url..Retrying")
 			throw RetryException()
 		}
 	}
 
 	private fun saveImage() {
 		if (currentArtwork?.token == null) {
-			Log.d(TAG, "no artwork available")
+			Timber.d("No artwork available")
 			return
 		}
 		if (!isExternalStorageWritable()) {
-			Log.d(TAG, "Storage is Not Writable")
+			Timber.d("Storage is Not Writable")
 			return
 		}
 		if (!isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) return
 
 		thread {
-			Log.d(TAG, "Saving Image")
+			Timber.d("Saving Image")
 			val format: Bitmap.CompressFormat
 			val ext: String
 			if (isPNG(currentArtwork.imageUri.toString())) {
@@ -185,12 +184,12 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val folder = File(Environment.getExternalStoragePublicDirectory(Environment
 					.DIRECTORY_PICTURES), "Archillect")
 			if (!folder.exists()) {
-				Log.d(TAG, "creating directory")
+				Timber.d("creating directory")
 				folder.mkdirs()
 			}
 			val file = File(folder, currentArtwork.token + ext)
 			if (file.exists()) {
-				Log.d(TAG, "File already exists")
+				Timber.d("File already exists")
 				showToast(this, getString(R.string.message_save_exists))
 				return@thread
 			}
@@ -200,23 +199,23 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 				os.flush()
 				os.close()
 				if (saved) {
-					Log.d(TAG, "Saving Finished")
+					Timber.d("Saving Finished")
 					showToast(this, getString(R.string.message_save_complete))
 					MediaScannerConnection.scanFile(this,
 							arrayOf(file.toString()), null
 					) { path, uri ->
-						Log.d(TAG, "Scanned: $path")
-						Log.d(TAG, "-> uri: $uri")
+						Timber.d("Scanned: $path")
+						Timber.d("-> uri: $uri")
 					}
 				} else {
-					Log.d(TAG, "Saving Error")
+					Timber.d("Saving Error")
 					showToast(this, getString(R.string.message_save_error))
 				}
 			} catch (e: FileNotFoundException) {
-				Log.e(TAG, "Saving Error", e)
+				Timber.e(e, "Saving Error")
 				showToast(this, getString(R.string.message_save_error))
 			} catch (e: IOException) {
-				Log.e(TAG, "Saving Error", e)
+				Timber.e(e, "Saving Error")
 				showToast(this, getString(R.string.message_save_error))
 			}
 		}

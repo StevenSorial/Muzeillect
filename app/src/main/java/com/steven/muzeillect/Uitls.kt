@@ -91,7 +91,7 @@ fun createArchillectLink(token: String): String {
 	return BASE_URL + token
 }
 
-fun  getRandomInt(bound: Int): Int {
+fun getRandomInt(bound: Int): Int {
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 		return ThreadLocalRandom.current().nextInt(bound)
 	} else {
