@@ -44,8 +44,4 @@ dependencies {
 	implementation 'org.jsoup:jsoup:1.10.3'
 	implementation 'com.muddzdev:styleabletoast:1.0.9'
 	implementation 'com.google.android.apps.muzei:muzei-api:2.0'
-
-//	androidTestImplementation 'com.android.support.test:runner:1.0.1'
-//	androidTestImplementation'com.android.support.test.espresso:espresso-core:3.0.1'
-//	testImplementation 'junit:junit:4.12'
 }
