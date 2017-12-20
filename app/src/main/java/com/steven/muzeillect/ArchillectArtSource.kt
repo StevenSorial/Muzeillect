@@ -9,7 +9,11 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import android.preference.PreferenceManager
-import com.google.android.apps.muzei.api.*
+import com.google.android.apps.muzei.api.Artwork
+import com.google.android.apps.muzei.api.MuzeiArtSource
+import com.google.android.apps.muzei.api.MuzeiContract
+import com.google.android.apps.muzei.api.RemoteMuzeiArtSource
+import com.google.android.apps.muzei.api.UserCommand
 import org.jsoup.Jsoup
 import timber.log.Timber
 import java.io.File
