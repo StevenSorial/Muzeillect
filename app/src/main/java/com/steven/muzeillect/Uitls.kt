@@ -16,7 +16,7 @@ import android.support.v4.content.res.ResourcesCompat
 import android.view.WindowManager
 import android.widget.Toast
 import com.muddzdev.styleabletoastlibrary.StyleableToast
-import java.util.*
+import java.util.Random
 import java.util.concurrent.ThreadLocalRandom
 
 const val RETRY_INTERVAL = 15L
