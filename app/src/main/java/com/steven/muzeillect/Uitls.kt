@@ -83,9 +83,7 @@ fun getDisplaySize(context: Context): Point {
 	return point
 }
 
-fun createArchillectLink(token: String): String {
-	return BASE_URL + token
-}
+fun createArchillectLink(token: String) = BASE_URL + token
 
 fun getRandomInt(bound: Int): Int {
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
