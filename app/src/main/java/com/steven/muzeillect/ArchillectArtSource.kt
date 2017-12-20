@@ -19,17 +19,20 @@ import java.io.IOException
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.concurrent.thread
 
 class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
-	private val COMMAND_ID_SHARE = 111
-	private val COMMAND_ID_SAVE = 222
+	private companion object {
+		private const val COMMAND_ID_SHARE = 111
+		private const val COMMAND_ID_SAVE = 222
+	}
 
-	private var pref: SharedPreferences? = null
-	private var updateInterval: Long? = null
-	private var isOnWiFiOnly: Boolean? = null
-	private var isHDOnly: Boolean? = null
+	private lateinit var pref: SharedPreferences
+	private var updateInterval = 0L
+	private var isOnWiFiOnly = false
+	private var isHDOnly = false
 
 	override fun onCreate() {
 		super.onCreate()
@@ -43,10 +46,10 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		)
 
 		pref = PreferenceManager.getDefaultSharedPreferences(this)
-		updateInterval = pref!!.getString(getString(R.string.pref_key_interval), getString(R
+		updateInterval = pref.getString(getString(R.string.pref_key_interval), getString(R
 				.string.pref_interval_value_default)).toLong()
-		isOnWiFiOnly = pref!!.getBoolean(getString(R.string.pref_key_wifi), false)
-		isHDOnly = pref!!.getBoolean(getString(R.string.pref_key_hd), false)
+		isOnWiFiOnly = pref.getBoolean(getString(R.string.pref_key_wifi), false)
+		isHDOnly = pref.getBoolean(getString(R.string.pref_key_hd), false)
 	}
 
 	override fun onCustomCommand(id: Int) {
@@ -62,10 +65,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
 		Timber.d("Trying to update")
 
-		if (isOnWiFiOnly!! && !isConnectedWifi(this)) {
+		if (isOnWiFiOnly && !isConnectedWifi(this)) {
 			Timber.d("Update on wifi only..Rescheduling")
-			scheduleUpdate(System.currentTimeMillis()
-					+ (RETRY_INTERVAL * MINUTE_MILLIS))
+			scheduleUpdate(System.currentTimeMillis() + MINUTES.toMillis(RETRY_INTERVAL))
 			return
 		}
 
@@ -90,7 +92,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 				.viewIntent(Intent(Intent.ACTION_VIEW,
 						Uri.parse(BASE_URL + newToken)))
 				.build())
-		scheduleUpdate(System.currentTimeMillis() + (updateInterval!! * MINUTE_MILLIS))
+		scheduleUpdate(System.currentTimeMillis() + MINUTES.toMillis(updateInterval))
 	}
 
 	@Throws(RemoteMuzeiArtSource.RetryException::class)
@@ -146,7 +148,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			Timber.d("Image Resolution: $w x $h")
 			Timber.d("Device Resolution: ${getDisplaySize(this)}")
 
-			if (isHDOnly!! && (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH)) {
+			if (isHDOnly && (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH)) {
 				Timber.d("Resolution is low..Retrying")
 				throw RetryException()
 			}

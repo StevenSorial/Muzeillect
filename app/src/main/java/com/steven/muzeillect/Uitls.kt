@@ -19,11 +19,7 @@ import com.muddzdev.styleabletoastlibrary.StyleableToast
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
-const val SECOND_MILLIS: Long = 1000
-const val MINUTE_MILLIS: Long = 60 * SECOND_MILLIS
-const val HOUR_MILLIS: Long = 60 * MINUTE_MILLIS
-
-const val RETRY_INTERVAL: Int = 15
+const val RETRY_INTERVAL = 15L
 
 const val BASE_URL = "http://archillect.com/"
 
@@ -49,10 +45,10 @@ private fun buildStyledToast(context: Context, message: String) {
 fun showToast(context: Context, message: String) {
 	if (Looper.myLooper() == Looper.getMainLooper()) {
 		buildStyledToast(context, message)
-		return
-	}
-	Handler(Looper.getMainLooper()).post {
-		buildStyledToast(context, message)
+	} else {
+		Handler(Looper.getMainLooper()).post {
+			buildStyledToast(context, message)
+		}
 	}
 }
 
