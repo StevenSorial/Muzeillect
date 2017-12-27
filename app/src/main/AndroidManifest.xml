@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-		  package="com.steven.muzeillect">
+	package="com.steven.muzeillect">
 
-	<uses-permission android:name="android.permission.INTERNET"/>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	<uses-permission android:name="android.permission.WAKE_LOCK"/>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 	<application
 		android:name=".MuzeillectApp"
@@ -22,24 +22,24 @@
 			android:label="@string/source_label">
 
 			<intent-filter>
-				<action android:name="com.google.android.apps.muzei.api.MuzeiArtSource"/>
+				<action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
 			</intent-filter>
 
 			<meta-data
 				android:name="color"
-				android:value="@color/colorPrimary"/>
+				android:value="@color/colorPrimary" />
 			<meta-data
 				android:name="settingsActivity"
-				android:value=".SettingsActivity"/>
+				android:value=".SettingsActivity" />
 		</service>
 
 		<activity
 			android:name=".SettingsActivity"
-			android:exported="true"/>
+			android:exported="true" />
 
 		<activity
 			android:name=".PermissionRequestActivity"
-			android:theme="@style/TranslucentTheme"/>
+			android:theme="@style/TranslucentTheme" />
 
 	</application>
 
