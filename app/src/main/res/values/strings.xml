@@ -32,5 +32,7 @@
 	<string name="message_save_exists">File already exists</string>
 	<string name="message_save_complete">Image Saved</string>
 	<string name="message_save_error">Saving Error</string>
+	<string name="message_permission_not_granted">Permission is not granted</string>
+
 
 </resources>

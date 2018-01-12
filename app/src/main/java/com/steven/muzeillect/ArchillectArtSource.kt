@@ -173,12 +173,16 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			Timber.e("No artwork available to save")
 			return
 		}
+
 		if (!isExternalStorageWritable()) {
 			Timber.e("Storage is Not Writable")
 			return
 		}
 
-		if (!isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) return
+		if (!isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+			showToast(this, getString(R.string.message_permission_not_granted))
+			return
+		}
 
 		thread {
 			Timber.i("Saving Image")
