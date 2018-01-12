@@ -12,14 +12,13 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
 import android.view.WindowManager
 import android.widget.Toast
 import com.muddzdev.styleabletoastlibrary.StyleableToast
 import java.util.Random
 import java.util.concurrent.ThreadLocalRandom
 
-const val RETRY_INTERVAL = 15L
+const val RETRY_INTERVAL = 5L
 
 const val BASE_URL = "http://archillect.com/"
 
@@ -31,14 +30,15 @@ const val EXTENSION_PNG = ".png"
 const val MINIMUM_WIDTH = 1000
 const val MINIMUM_HEIGHT = 1000
 
+const val PREFS_VERSION_CODE = "version_code"
+
 private fun buildStyledToast(context: Context, message: String) {
 	return StyleableToast.Builder(context)
-			.duration(Toast.LENGTH_SHORT)
+			.length(Toast.LENGTH_SHORT)
 			.text(message)
 			.textColor(ContextCompat.getColor(context, R.color.colorAccent))
-			.typeface(ResourcesCompat.getFont(context, R.font.inconsolata))
+			.font(R.font.inconsolata)
 			.backgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
-			.build()
 			.show()
 }
 
@@ -52,7 +52,7 @@ fun showToast(context: Context, message: String) {
 	}
 }
 
-fun isConnectedWifi(context: Context): Boolean {
+fun isConnectedToWifi(context: Context): Boolean {
 	val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 	val networkInfo = cm.activeNetworkInfo
 	return (networkInfo != null
@@ -83,12 +83,20 @@ fun getDisplaySize(context: Context): Point {
 	return point
 }
 
-fun createArchillectLink(token: String) = BASE_URL + token
+fun getArchillectLink(id: Long) = BASE_URL + id
 
-fun getRandomInt(bound: Int): Int {
+fun getRandomLong(bound: Long): Long {
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-		return ThreadLocalRandom.current().nextInt(bound)
+		return ThreadLocalRandom.current().nextLong(bound)
 	} else {
-		return Random().nextInt(bound)
+		return Random().nextInt(bound.toInt()).toLong()
+	}
+}
+
+fun isMuzeiInstalled(packageManager: PackageManager): Boolean {
+	try {
+		return packageManager.getApplicationInfo("net.nurik.roman.muzei", 0).enabled
+	} catch (e: PackageManager.NameNotFoundException) {
+		return false
 	}
 }
