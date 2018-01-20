@@ -30,8 +30,6 @@ const val EXTENSION_PNG = ".png"
 const val MINIMUM_WIDTH = 1000
 const val MINIMUM_HEIGHT = 1000
 
-const val PREFS_VERSION_CODE = "version_code"
-
 private fun buildStyledToast(context: Context, message: String) {
 	return StyleableToast.Builder(context)
 			.length(Toast.LENGTH_SHORT)
@@ -60,9 +58,7 @@ fun isConnectedToWifi(context: Context): Boolean {
 			&& networkInfo.type == ConnectivityManager.TYPE_WIFI)
 }
 
-fun isExternalStorageWritable(): Boolean {
-	return Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
-}
+fun isExternalStorageWritable() = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
 
 fun isPermissionGranted(context: Context, permission: String): Boolean {
 
@@ -83,20 +79,12 @@ fun getDisplaySize(context: Context): Point {
 	return point
 }
 
-fun getArchillectLink(id: Long) = BASE_URL + id
+fun getArchillectLink(id: Long): String = BASE_URL + id
 
 fun getRandomLong(bound: Long): Long {
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 		return ThreadLocalRandom.current().nextLong(bound)
 	} else {
 		return Random().nextInt(bound.toInt()).toLong()
-	}
-}
-
-fun isMuzeiInstalled(packageManager: PackageManager): Boolean {
-	try {
-		return packageManager.getApplicationInfo("net.nurik.roman.muzei", 0).enabled
-	} catch (e: PackageManager.NameNotFoundException) {
-		return false
 	}
 }
