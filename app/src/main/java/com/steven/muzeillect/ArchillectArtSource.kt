@@ -157,7 +157,6 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val h = bitmap.height
 			val w = bitmap.width
 			Timber.d("Image Resolution: $w x $h")
-			Timber.d("Device Resolution: ${getDisplaySize(this)}")
 			bitmap.recycle()
 			if (h > MINIMUM_HEIGHT && w > MINIMUM_WIDTH) {
 				return true

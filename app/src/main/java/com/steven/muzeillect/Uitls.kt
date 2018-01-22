@@ -5,14 +5,12 @@ package com.steven.muzeillect
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Point
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.content.ContextCompat
-import android.view.WindowManager
 import android.widget.Toast
 import com.muddzdev.styleabletoastlibrary.StyleableToast
 import java.util.Random
@@ -70,13 +68,6 @@ fun isPermissionGranted(context: Context, permission: String): Boolean {
 	i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 	context.startActivity(i)
 	return false
-}
-
-fun getDisplaySize(context: Context): Point {
-	val window = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-	val point = Point()
-	window.defaultDisplay.getRealSize(point)
-	return point
 }
 
 fun getArchillectLink(id: Long): String = BASE_URL + id
