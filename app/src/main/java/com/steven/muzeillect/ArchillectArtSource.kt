@@ -187,7 +187,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private fun saveImage() {
-		if (currentArtwork?.token == null) {
+		if (currentArtwork == null) {
 			Timber.e("No artwork available to save")
 			return
 		}
@@ -206,7 +206,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			Timber.i("Saving Image")
 			val format: Bitmap.CompressFormat
 			val ext: String
-			if (isPNG(currentArtwork.imageUri.toString())) {
+			if (isPNG(currentArtwork!!.imageUri.toString())) {
 				format = Bitmap.CompressFormat.PNG
 				ext = EXTENSION_PNG
 			} else {
@@ -221,7 +221,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 				Timber.i("creating directory")
 				folder.mkdirs()
 			}
-			val file = File(folder, currentArtwork.token + ext)
+			val file = File(folder, currentArtwork!!.token + ext)
 			if (file.exists()) {
 				Timber.i("File already exists")
 				showToast(this, getString(R.string.message_save_exists))
@@ -253,13 +253,13 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private fun shareImage() {
-		if (currentArtwork?.token == null) {
+		if (currentArtwork == null) {
 			Timber.e("No artwork available to share")
 			return
 		}
 		val i = Intent()
 		i.action = Intent.ACTION_SEND
-		i.putExtra(Intent.EXTRA_TEXT, getArchillectLink(currentArtwork.token.toLong()))
+		i.putExtra(Intent.EXTRA_TEXT, getArchillectLink(currentArtwork!!.token.toLong()))
 		i.type = "text/plain"
 		startActivity(Intent.createChooser(i, getString(R.string.action_share))
 				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
