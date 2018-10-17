@@ -13,6 +13,8 @@ import com.google.android.apps.muzei.api.MuzeiArtSource
 import com.google.android.apps.muzei.api.MuzeiContract
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource
 import com.google.android.apps.muzei.api.UserCommand
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.jsoup.Jsoup
 import timber.log.Timber
 import java.io.File
@@ -38,13 +40,17 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	private val updateInterval by lazy {
 		pref.getString(getString(R.string.pref_key_interval),
 				getString(R.string.pref_interval_value_default))
-				.toLong()
+				?.toLongOrNull() ?: 180
 	}
 	private val isOnWiFiOnly by lazy {
 		pref.getBoolean(getString(R.string.pref_key_wifi), false)
 	}
 	private val isHDOnly by lazy {
 		pref.getBoolean(getString(R.string.pref_key_hd), false)
+	}
+
+	private val okHttpClient by lazy {
+		 OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
 	}
 
 	override fun onCreate() {
@@ -132,7 +138,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	private fun getImageURL(token: Long): String {
 		Timber.i("Generating Image Token")
 		try {
-			val doc = Jsoup.connect(getArchillectLink(token)).get()
+			val req = Request.Builder().url(getArchillectLink(token)).build()
+			val docString = okHttpClient.newCall(req).execute().body()?.string()
+			val doc = Jsoup.parse(docString)
 			val img = doc.select("#ii").first()
 			val imgUrl = img.attr("src")
 			Timber.i("Generated Image URL: $imgUrl")
@@ -146,10 +154,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	private fun isImageHD(URLString: String): Boolean {
 		Timber.i("Checking Image Size")
 		try {
-			val connection = URL(URLString).openConnection() as HttpURLConnection
-			connection.connectTimeout = SECONDS.toMillis(30).toInt()
-			connection.readTimeout = MINUTES.toMillis(2).toInt()
-			val bitmap = BitmapFactory.decodeStream(connection.inputStream)
+			val req = Request.Builder().url(URLString).build()
+			val stream = okHttpClient.newCall(req).execute().body()?.byteStream()
+			val bitmap = BitmapFactory.decodeStream(stream)
 			if (bitmap == null) {
 				Timber.e("Decoding Image Failed")
 				return false
