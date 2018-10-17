@@ -19,9 +19,6 @@ import org.jsoup.Jsoup
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.Date
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -99,7 +96,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			throw getRetryException()
 		}
 
-		if (getResponseCode(imgUrl) != HttpURLConnection.HTTP_OK) {
+		if (getResponseCode(imgUrl) != 200) {
 			throw getRetryException()
 		}
 
@@ -151,6 +148,19 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		}
 	}
 
+	private fun getResponseCode(URL: String): Int {
+		Timber.i("Getting response code")
+		try {
+			val req = Request.Builder().url(URL).build()
+			val responseCode = okHttpClient.newCall(req).execute().code()
+			Timber.i("response code: $responseCode")
+			return responseCode
+		} catch (e: Exception) {
+			Timber.e(e, "Error trying connecting to url")
+			return -1
+		}
+	}
+
 	private fun isImageHD(URLString: String): Boolean {
 		Timber.i("Checking Image Size")
 		try {
@@ -165,10 +175,10 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val w = bitmap.width
 			Timber.d("Image Resolution: $w x $h")
 			bitmap.recycle()
-			if (h > MINIMUM_HEIGHT && w > MINIMUM_WIDTH) {
+			if (h >= MINIMUM_HEIGHT && w >= MINIMUM_WIDTH) {
 				return true
 			}
-		} catch (e: IOException) {
+		} catch (e: Exception) {
 			Timber.e(e, "Checking Image Size")
 		}
 		return false
@@ -257,21 +267,6 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		val time = System.currentTimeMillis() + updateTimeMillis
 		Timber.i("Scheduling next artwork at ${Date(time)}")
 		scheduleUpdate(time)
-	}
-
-	private fun getResponseCode(URL: String): Int {
-		Timber.i("Getting response code")
-		try {
-			val connection = URL(URL).openConnection() as HttpURLConnection
-			connection.connectTimeout = SECONDS.toMillis(30).toInt()
-			connection.readTimeout = MINUTES.toMillis(2).toInt()
-			val responseCode = connection.responseCode
-			Timber.i("response code: $responseCode")
-			return responseCode
-		} catch (e: IOException) {
-			Timber.e(e, "Error trying connecting to url")
-			return -1
-		}
 	}
 
 	private fun getRetryException(): RetryException {
