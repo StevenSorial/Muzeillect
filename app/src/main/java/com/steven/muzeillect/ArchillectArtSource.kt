@@ -119,7 +119,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	private fun getRandomToken(): Long {
 		Timber.i("Generating Image Token")
 		try {
-			val doc = Jsoup.connect(BASE_URL).get()
+			val req = Request.Builder().url(BASE_URL).build()
+			val docString = okHttpClient.newCall(req).execute().body()?.string()
+			val doc = Jsoup.parse(docString)
 			val element = doc.select("div.overlay").first()
 			val lastToken = element.text().toLong()
 			val randToken = getRandomLong(lastToken) + 1
