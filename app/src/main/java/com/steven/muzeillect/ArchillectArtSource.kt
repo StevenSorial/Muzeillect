@@ -47,7 +47,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private val okHttpClient by lazy {
-		 OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
+		OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
 	}
 
 	override fun onCreate() {
@@ -72,7 +72,6 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
 	@Throws(RetryException::class)
 	override fun onTryUpdate(reason: Int) {
-
 		Timber.i("Trying to update")
 
 		if (isOnWiFiOnly && !isConnectedToWifi(this)) {
@@ -81,38 +80,47 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			return
 		}
 
+		val artwork = getArtwork()
+
+		publishArtwork(artwork)
+
+		scheduleUpdateAfter(MINUTES.toMillis(updateInterval))
+	}
+
+	@Throws(RetryException::class)
+	private fun getArtwork(): Artwork {
+
 		val oldToken = currentArtwork?.token?.toLongOrNull() ?: -1
 		Timber.i("old token = $oldToken")
 
 		val newToken = getRandomToken()
 		if (oldToken == newToken) {
 			Timber.i("New token is the Same as old one")
-			throw getRetryException()
+			return getArtwork()
 		}
 
 		val imgUrl = getImageURL(newToken)
 		if (!isJPGOrPNG(imgUrl)) {
 			Timber.i("Invalid Format")
-			throw getRetryException()
+			return getArtwork()
 		}
 
 		if (getResponseCode(imgUrl) != 200) {
-			throw getRetryException()
+			return getArtwork()
 		}
 
 		if (isHDOnly && !isImageHD(imgUrl)) {
 			Timber.i("Resolution is low")
-			throw getRetryException()
+			return getArtwork()
 		}
 
-		publishArtwork(Artwork.Builder()
+		return Artwork.Builder()
 				.title(newToken.toString())
 				.byline("Archillect")
 				.imageUri(Uri.parse(imgUrl))
 				.token(newToken.toString())
 				.viewIntent(Intent(Intent.ACTION_VIEW, Uri.parse(getArchillectLink(newToken))))
-				.build())
-		scheduleUpdateAfter(MINUTES.toMillis(updateInterval))
+				.build()
 	}
 
 	@Throws(RetryException::class)
@@ -181,7 +189,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 				return true
 			}
 		} catch (e: Exception) {
-			Timber.e(e, "Checking Image Size")
+			Timber.e(e, "Error Checking Image Size")
 		}
 		return false
 	}
