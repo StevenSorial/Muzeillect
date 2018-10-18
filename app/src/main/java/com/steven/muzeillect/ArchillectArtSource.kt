@@ -51,6 +51,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	private var oldToken: Long = -1
+	private var maxToken: Long = 100000
 
 	override fun onCreate() {
 		super.onCreate()
@@ -85,6 +86,8 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		oldToken = currentArtwork?.token?.toLongOrNull() ?: -1
 		Timber.i("old token = $oldToken")
 
+		maxToken = getMaxToken()
+
 		val artwork = getArtwork()
 
 		publishArtwork(artwork)
@@ -95,7 +98,10 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	@Throws(RetryException::class)
 	private fun getArtwork(): Artwork {
 
-		val newToken = getRandomToken()
+		val newToken = getRandomLong(maxToken) + 1
+
+		Timber.i("Generated Image Token: $newToken")
+
 		if (oldToken == newToken) {
 			Timber.i("New token is the Same as old one")
 			return getArtwork()
@@ -126,17 +132,14 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	}
 
 	@Throws(RetryException::class)
-	private fun getRandomToken(): Long {
+	private fun getMaxToken(): Long {
 		Timber.i("Generating Image Token")
 		try {
 			val req = Request.Builder().url(BASE_URL).build()
 			val docString = okHttpClient.newCall(req).execute().body()?.string()
 			val doc = Jsoup.parse(docString)
 			val element = doc.select("div.overlay").first()
-			val lastToken = element.text().toLong()
-			val randToken = getRandomLong(lastToken) + 1
-			Timber.i("Generated Image Token: $randToken")
-			return randToken
+			return  element.text().toLongOrNull() ?: 100000
 		} catch (e: Exception) {
 			Timber.e(e, "Error generating Token")
 			throw getRetryException()
