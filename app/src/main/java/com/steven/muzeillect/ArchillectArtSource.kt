@@ -108,17 +108,8 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		}
 
 		val imgUrl = getImageURL(newToken)
-		if (!isJPGOrPNG(imgUrl)) {
-			Timber.i("Invalid Format")
-			return getArtwork()
-		}
 
-		if (getResponseCode(imgUrl) != 200) {
-			return getArtwork()
-		}
-
-		if (isHDOnly && !isImageHD(imgUrl)) {
-			Timber.i("Resolution is low")
+		if (!isImageValid(imgUrl)) {
 			return getArtwork()
 		}
 
@@ -139,7 +130,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val docString = okHttpClient.newCall(req).execute().body()?.string()
 			val doc = Jsoup.parse(docString)
 			val element = doc.select("div.overlay").first()
-			return  element.text().toLongOrNull() ?: 100000
+			return element.text().toLongOrNull() ?: 100000
 		} catch (e: Exception) {
 			Timber.e(e, "Error generating Token")
 			throw getRetryException()
@@ -163,25 +154,21 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		}
 	}
 
-	private fun getResponseCode(URL: String): Int {
-		Timber.i("Getting response code")
-		try {
-			val req = Request.Builder().url(URL).build()
-			val responseCode = okHttpClient.newCall(req).execute().code()
-			Timber.i("response code: $responseCode")
-			return responseCode
-		} catch (e: Exception) {
-			Timber.e(e, "Error trying connecting to url")
-			return -1
+	private fun isImageValid(URLString: String): Boolean {
+		Timber.i("Validating Image")
+		if (!isJPGOrPNG(URLString)) {
+			Timber.i("Invalid Format")
+			return false
 		}
-	}
-
-	private fun isImageHD(URLString: String): Boolean {
-		Timber.i("Checking Image Size")
 		try {
 			val req = Request.Builder().url(URLString).build()
-			val stream = okHttpClient.newCall(req).execute().body()?.byteStream()
-			val bitmap = BitmapFactory.decodeStream(stream)
+			val response = okHttpClient.newCall(req).execute()
+			val responseCode = response.code()
+			Timber.i("Response code $responseCode")
+			if (responseCode != 200) return false
+			if (!isHDOnly) return true
+			Timber.i("Checking Image Size")
+			val bitmap = BitmapFactory.decodeStream(response.body()?.byteStream())
 			if (bitmap == null) {
 				Timber.e("Decoding Image Failed")
 				return false
@@ -190,13 +177,15 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			val w = bitmap.width
 			Timber.d("Image Resolution: $w x $h")
 			bitmap.recycle()
-			if (h >= MINIMUM_HEIGHT && w >= MINIMUM_WIDTH) {
-				return true
+			if (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH) {
+				Timber.i("Resolution is low")
+				return false
 			}
 		} catch (e: Exception) {
 			Timber.e(e, "Error Checking Image Size")
+			return false
 		}
-		return false
+		return true
 	}
 
 	private fun saveImage() {
