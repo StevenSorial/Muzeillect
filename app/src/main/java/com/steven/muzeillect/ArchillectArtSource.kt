@@ -50,6 +50,8 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
 	}
 
+	private var oldToken: Long = -1
+
 	override fun onCreate() {
 		super.onCreate()
 
@@ -80,6 +82,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 			return
 		}
 
+		oldToken = currentArtwork?.token?.toLongOrNull() ?: -1
+		Timber.i("old token = $oldToken")
+
 		val artwork = getArtwork()
 
 		publishArtwork(artwork)
@@ -89,9 +94,6 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
 	@Throws(RetryException::class)
 	private fun getArtwork(): Artwork {
-
-		val oldToken = currentArtwork?.token?.toLongOrNull() ?: -1
-		Timber.i("old token = $oldToken")
 
 		val newToken = getRandomToken()
 		if (oldToken == newToken) {
