@@ -26,12 +26,29 @@
 			</intent-filter>
 
 			<meta-data
+				android:name="replacement"
+				android:value="com.steven.muzeillect.ArchillectArtProvider"/>
+			<meta-data
 				android:name="color"
 				android:value="@color/colorPrimary" />
 			<meta-data
 				android:name="settingsActivity"
-				android:value=".SettingsActivity" />
+				android:value="com.steven.muzeillect.SettingsActivity" />
 		</service>
+		<provider
+			android:name=".ArchillectArtProvider"
+			android:authorities="com.steven.muzeillect"
+			android:description="@string/source_desc"
+			android:exported="true"
+			android:label="@string/source_label"
+			android:permission="com.google.android.apps.muzei.api.ACCESS_PROVIDER">
+			<intent-filter>
+				<action android:name="com.google.android.apps.muzei.api.MuzeiArtProvider" />
+			</intent-filter>
+			<meta-data
+				android:name="settingsActivity"
+				android:value="com.steven.muzeillect.SettingsActivity" />
+		</provider>
 
 		<activity
 			android:name=".SettingsActivity"

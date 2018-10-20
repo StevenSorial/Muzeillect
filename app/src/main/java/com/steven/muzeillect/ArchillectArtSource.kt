@@ -1,28 +1,11 @@
 package com.steven.muzeillect
 
-import android.Manifest
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaScannerConnection
-import android.net.Uri
-import android.os.Environment
-import android.preference.PreferenceManager
-import com.google.android.apps.muzei.api.Artwork
 import com.google.android.apps.muzei.api.MuzeiArtSource
-import com.google.android.apps.muzei.api.MuzeiContract
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource
 import com.google.android.apps.muzei.api.UserCommand
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.jsoup.Jsoup
 import timber.log.Timber
-import java.io.File
-import java.io.FileOutputStream
 import java.util.Date
 import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
-import kotlin.concurrent.thread
 
 class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
@@ -31,27 +14,9 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		private const val COMMAND_ID_SAVE = 222
 	}
 
-	private val pref by lazy {
-		PreferenceManager.getDefaultSharedPreferences(this)
+	private val archillectCore by lazy {
+		ArchillectCore(this, currentArtwork?.token?.toLongOrNull() ?: -1)
 	}
-	private val updateInterval by lazy {
-		pref.getString(getString(R.string.pref_key_interval),
-				getString(R.string.pref_interval_value_default))
-				?.toLongOrNull() ?: 180
-	}
-	private val isOnWiFiOnly by lazy {
-		pref.getBoolean(getString(R.string.pref_key_wifi), false)
-	}
-	private val isHDOnly by lazy {
-		pref.getBoolean(getString(R.string.pref_key_hd), false)
-	}
-
-	private val okHttpClient by lazy {
-		OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
-	}
-
-	private var oldToken: Long = -1
-	private var maxToken: Long = 100000
 
 	override fun onCreate() {
 		super.onCreate()
@@ -68,8 +33,8 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	override fun onCustomCommand(id: Int) {
 		super.onCustomCommand(id)
 		when (id) {
-			COMMAND_ID_SAVE -> saveImage()
-			COMMAND_ID_SHARE -> shareImage()
+			COMMAND_ID_SAVE -> ArchillectCore.saveImage(this, API.OLD, currentArtwork)
+			COMMAND_ID_SHARE -> ArchillectCore.shareImage(this, API.OLD, currentArtwork)
 		}
 	}
 
@@ -77,194 +42,20 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 	override fun onTryUpdate(reason: Int) {
 		Timber.i("Trying to update")
 
-		if (isOnWiFiOnly && !isConnectedToWifi(this)) {
+		if (archillectCore.isOnWiFiOnly && !isConnectedToWifi(this)) {
 			Timber.i("Update on wifi only..Rescheduling")
 			scheduleUpdateAfter(MINUTES.toMillis(RETRY_INTERVAL))
 			return
 		}
 
-		oldToken = currentArtwork?.token?.toLongOrNull() ?: -1
-		Timber.i("old token = $oldToken")
+		archillectCore.getMaxToken()
 
-		maxToken = getMaxToken()
-
-		val artwork = getArtwork()
+		val artwork = archillectCore.getArtwork(API.OLD) as? OldAPIArtwork?
+				?: throw RetryException()
 
 		publishArtwork(artwork)
 
-		scheduleUpdateAfter(MINUTES.toMillis(updateInterval))
-	}
-
-	@Throws(RetryException::class)
-	private fun getArtwork(): Artwork {
-
-		val newToken = getRandomLong(maxToken) + 1
-
-		Timber.i("Generated Image Token: $newToken")
-
-		if (oldToken == newToken) {
-			Timber.i("New token is the Same as old one")
-			return getArtwork()
-		}
-
-		val imgUrl = getImageURL(newToken)
-
-		if (!isImageValid(imgUrl)) {
-			return getArtwork()
-		}
-
-		return Artwork.Builder()
-				.title(newToken.toString())
-				.byline("Archillect")
-				.imageUri(Uri.parse(imgUrl))
-				.token(newToken.toString())
-				.viewIntent(Intent(Intent.ACTION_VIEW, Uri.parse(getArchillectLink(newToken))))
-				.build()
-	}
-
-	@Throws(RetryException::class)
-	private fun getMaxToken(): Long {
-		Timber.i("Generating Image Token")
-		try {
-			val req = Request.Builder().url(BASE_URL).build()
-			val docString = okHttpClient.newCall(req).execute().body()?.string()
-			val doc = Jsoup.parse(docString)
-			val element = doc.select("div.overlay").first()
-			return element.text().toLongOrNull() ?: 100000
-		} catch (e: Exception) {
-			Timber.e(e, "Error generating Token")
-			throw getRetryException()
-		}
-	}
-
-	@Throws(RetryException::class)
-	private fun getImageURL(token: Long): String {
-		Timber.i("Generating Image Token")
-		try {
-			val req = Request.Builder().url(getArchillectLink(token)).build()
-			val docString = okHttpClient.newCall(req).execute().body()?.string()
-			val doc = Jsoup.parse(docString)
-			val img = doc.select("#ii").first()
-			val imgUrl = img.attr("src")
-			Timber.i("Generated Image URL: $imgUrl")
-			return imgUrl
-		} catch (e: Exception) {
-			Timber.e(e, "Error generating Image URL")
-			throw getRetryException()
-		}
-	}
-
-	private fun isImageValid(URLString: String): Boolean {
-		Timber.i("Validating Image")
-		if (!isJPGOrPNG(URLString)) {
-			Timber.i("Invalid Format")
-			return false
-		}
-		try {
-			val req = Request.Builder().url(URLString).build()
-			val response = okHttpClient.newCall(req).execute()
-			val responseCode = response.code()
-			Timber.i("Response code $responseCode")
-			if (responseCode != 200) return false
-			if (!isHDOnly) return true
-			Timber.i("Checking Image Size")
-			val bitmap = BitmapFactory.decodeStream(response.body()?.byteStream())
-			if (bitmap == null) {
-				Timber.e("Decoding Image Failed")
-				return false
-			}
-			val h = bitmap.height
-			val w = bitmap.width
-			Timber.d("Image Resolution: $w x $h")
-			bitmap.recycle()
-			if (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH) {
-				Timber.i("Resolution is low")
-				return false
-			}
-		} catch (e: Exception) {
-			Timber.e(e, "Error Checking Image Size")
-			return false
-		}
-		return true
-	}
-
-	private fun saveImage() {
-		if (currentArtwork == null) {
-			Timber.e("No artwork available to save")
-			return
-		}
-
-		if (!isExternalStorageWritable()) {
-			Timber.e("Storage is Not Writable")
-			return
-		}
-
-		if (!isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-			showToast(this, getString(R.string.message_permission_not_granted))
-			return
-		}
-
-		thread {
-			Timber.i("Saving Image")
-			val format: Bitmap.CompressFormat
-			val ext: String
-			if (isPNG(currentArtwork!!.imageUri.toString())) {
-				format = Bitmap.CompressFormat.PNG
-				ext = EXTENSION_PNG
-			} else {
-				format = Bitmap.CompressFormat.JPEG
-				ext = EXTENSION_JPG
-			}
-			val os: FileOutputStream
-			val bitmap = MuzeiContract.Artwork.getCurrentArtworkBitmap(this)
-			val folder = File(Environment.getExternalStoragePublicDirectory(Environment
-					.DIRECTORY_PICTURES), "Archillect")
-			if (!folder.exists()) {
-				Timber.i("creating directory")
-				folder.mkdirs()
-			}
-			val file = File(folder, currentArtwork!!.token + ext)
-			if (file.exists()) {
-				Timber.i("File already exists")
-				showToast(this, getString(R.string.message_save_exists))
-				return@thread
-			}
-			try {
-				os = FileOutputStream(file)
-				val saved = bitmap.compress(format, 100, os)
-				os.flush()
-				os.close()
-				if (saved) {
-					Timber.i("Saving Finished")
-					showToast(this, getString(R.string.message_save_complete))
-					MediaScannerConnection.scanFile(this,
-							arrayOf(file.toString()), null
-					) { path, uri ->
-						Timber.d("Scanned: $path")
-						Timber.d("-> uri: $uri")
-					}
-				} else {
-					Timber.e("Saving Error")
-					showToast(this, getString(R.string.message_save_error))
-				}
-			} catch (e: Exception) {
-				Timber.e(e, "Saving Error")
-				showToast(this, getString(R.string.message_save_error))
-			}
-		}
-	}
-
-	private fun shareImage() {
-		if (currentArtwork == null) {
-			Timber.e("No artwork available to share")
-			return
-		}
-		val i = Intent()
-		i.action = Intent.ACTION_SEND
-		i.putExtra(Intent.EXTRA_TEXT, getArchillectLink(currentArtwork!!.token.toLong()))
-		i.type = "text/plain"
-		startActivity(Intent.createChooser(i, getString(R.string.action_share))
-				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+		scheduleUpdateAfter(MINUTES.toMillis(archillectCore.updateInterval))
 	}
 
 	private fun scheduleUpdateAfter(updateTimeMillis: Long) {
@@ -273,20 +64,4 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 		scheduleUpdate(time)
 	}
 
-	private fun getRetryException(): RetryException {
-		Timber.i("Retrying..")
-		return RetryException()
-	}
-
-	private fun isJPG(imgURL: String): Boolean {
-		return EXTENSION_JPG in imgURL
-	}
-
-	private fun isPNG(imgURL: String): Boolean {
-		return EXTENSION_PNG in imgURL
-	}
-
-	private fun isJPGOrPNG(imgURL: String): Boolean {
-		return isJPG(imgURL) || isPNG(imgURL)
-	}
 }
