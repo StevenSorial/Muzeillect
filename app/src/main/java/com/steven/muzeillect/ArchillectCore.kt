@@ -34,7 +34,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 	val isOnWiFiOnly by lazy {
 		pref.getBoolean(context?.getString(R.string.pref_key_wifi), false)
 	}
-	val isHDOnly by lazy {
+	private val isHDOnly by lazy {
 		pref.getBoolean(context?.getString(R.string.pref_key_hd), false)
 	}
 
@@ -58,7 +58,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 		}
 	}
 
-	fun getImageURL(token: Long): String? {
+	private fun getImageURL(token: Long): String? {
 		Timber.i("Generating Image Token")
 		try {
 			val req = Request.Builder().url(getArchillectLink(token)).build()
@@ -125,7 +125,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 			return getArtwork(api)
 		}
 
-		val artwork: Any? = if (api == API.OLD) {
+		return if (api == API.OLD) {
 			Artwork.Builder()
 					.title(newToken.toString())
 					.byline("Archillect")
@@ -144,7 +144,6 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 				persistentUri = Uri.parse(imgUrl)
 			}
 		}
-		return artwork
 	}
 
 	companion object {
