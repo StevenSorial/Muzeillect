@@ -18,6 +18,8 @@ import java.util.concurrent.ThreadLocalRandom
 
 const val RETRY_INTERVAL = 5L
 
+const val MUZEI_PACKAGE_NAME = "net.nurik.roman.muzei"
+
 const val BASE_URL = "http://archillect.com/"
 
 const val KEY_PERMISSION: String = "permission"

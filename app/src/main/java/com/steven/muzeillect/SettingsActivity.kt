@@ -2,6 +2,7 @@ package com.steven.muzeillect
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
@@ -12,5 +13,10 @@ class SettingsActivity : AppCompatActivity() {
 		back.setOnClickListener {
 			onBackPressed()
 		}
+	}
+
+	override fun onResume() {
+		super.onResume()
+		back.visibility = if (isTaskRoot) View.GONE else View.VISIBLE
 	}
 }

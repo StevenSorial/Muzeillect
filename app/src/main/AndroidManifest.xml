@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.steven.muzeillect">
 
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -27,7 +28,7 @@
 
 			<meta-data
 				android:name="replacement"
-				android:value="com.steven.muzeillect.ArchillectArtProvider"/>
+				android:value="com.steven.muzeillect.ArchillectArtProvider" />
 			<meta-data
 				android:name="color"
 				android:value="@color/colorPrimary" />
@@ -52,7 +53,12 @@
 
 		<activity
 			android:name=".SettingsActivity"
-			android:exported="true" />
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 
 		<activity
 			android:name=".PermissionRequestActivity"

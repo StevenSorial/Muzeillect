@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.preference.PreferenceScreen
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<SwitchPreferenceCompat
 		android:defaultValue="false"
+		app:iconSpaceReserved="false"
 		android:key="@string/pref_key_wifi"
-		android:title="@string/pref_title_wifi"/>
+		android:title="@string/pref_title_wifi" />
 	<SwitchPreferenceCompat
 		android:defaultValue="false"
+		app:iconSpaceReserved="false"
 		android:key="@string/pref_key_hd"
-		android:title="@string/pref_title_hd"/>
+		android:title="@string/pref_title_hd" />
 	<ListPreference
 		android:defaultValue="@string/pref_interval_value_default"
 		android:dialogTitle=""
 		android:entries="@array/pref_labels_interval"
 		android:entryValues="@array/pref_values_interval"
+		app:iconSpaceReserved="false"
 		android:key="@string/pref_key_interval"
 		android:summary="%s"
-		android:title="@string/pref_title_interval"/>
+		android:title="@string/pref_title_interval" />
+
+	<com.steven.muzeillect.OpenPreference
+		app:iconSpaceReserved="false"
+		android:key="@string/pref_key_open" />
 
 </android.support.v7.preference.PreferenceScreen>
