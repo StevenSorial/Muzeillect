@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen
+<androidx.preference.PreferenceScreen
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -27,4 +27,4 @@
 		app:iconSpaceReserved="false"
 		android:key="@string/pref_key_open" />
 
-</android.support.v7.preference.PreferenceScreen>
+</androidx.preference.PreferenceScreen>

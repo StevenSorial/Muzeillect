@@ -2,8 +2,8 @@ package com.steven.muzeillect
 
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AppCompatActivity
 import android.view.WindowManager
 
 class PermissionRequestActivity : AppCompatActivity() {

@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.widget.Toast
 import com.muddzdev.styleabletoastlibrary.StyleableToast
 import java.util.Random

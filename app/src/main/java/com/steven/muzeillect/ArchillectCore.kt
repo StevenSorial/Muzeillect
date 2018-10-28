@@ -6,9 +6,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Environment
 import android.preference.PreferenceManager
+import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.Artwork
 import com.google.android.apps.muzei.api.MuzeiContract
 import okhttp3.OkHttpClient
@@ -129,19 +129,18 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 			Artwork.Builder()
 					.title(newToken.toString())
 					.byline("Archillect")
-					.imageUri(Uri.parse(imgUrl))
+					.imageUri(imgUrl.toUri())
 					.token(newToken.toString())
-					.viewIntent(Intent(Intent.ACTION_VIEW, Uri.parse(getArchillectLink(newToken))))
+					.viewIntent(Intent(Intent.ACTION_VIEW, getArchillectLink(newToken).toUri()))
 					.build()
 		} else {
 			NewAPIArtwork().apply {
 				token = newToken.toString()
 				title = newToken.toString()
 				byline = "Archillect"
-				val link = Uri.parse(getArchillectLink(newToken))
-				webUri = link
-				metadata = link.toString()
-				persistentUri = Uri.parse(imgUrl)
+				webUri = getArchillectLink(newToken).toUri()
+				metadata = getArchillectLink(newToken)
+				persistentUri = imgUrl.toUri()
 			}
 		}
 	}
