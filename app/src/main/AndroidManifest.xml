@@ -1,70 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.steven.muzeillect">
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  package="com.steven.muzeillect">
 
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-	<application
-		android:name=".MuzeillectApp"
-		android:allowBackup="true"
-		android:icon="@mipmap/ic_launcher"
-		android:label="@string/app_name"
-		android:roundIcon="@mipmap/ic_launcher"
-		android:supportsRtl="true"
-		android:theme="@style/AppTheme"
-		android:usesCleartextTraffic="true">
-		<service
-			android:name=".ArchillectArtSource"
-			android:description="@string/source_desc"
-			android:icon="@drawable/logo"
-			android:label="@string/source_label">
+  <application
+    android:name=".MuzeillectApp"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="true"
+    tools:ignore="GoogleAppIndexingWarning">
+    <service
+      android:name=".ArchillectArtSource"
+      android:description="@string/source_desc"
+      android:icon="@drawable/logo"
+      android:label="@string/source_label">
 
-			<intent-filter>
-				<action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
-			</intent-filter>
+      <intent-filter>
+        <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
+      </intent-filter>
 
-			<meta-data
-				android:name="replacement"
-				android:value="com.steven.muzeillect.ArchillectArtProvider" />
-			<meta-data
-				android:name="color"
-				android:value="@color/colorPrimary" />
-			<meta-data
-				android:name="settingsActivity"
-				android:value="com.steven.muzeillect.SettingsActivity" />
-		</service>
-		<provider
-			android:name=".ArchillectArtProvider"
-			android:authorities="com.steven.muzeillect"
-			android:description="@string/source_desc"
-			android:exported="true"
-			android:label="@string/source_label"
-			android:permission="com.google.android.apps.muzei.api.ACCESS_PROVIDER">
-			<intent-filter>
-				<action android:name="com.google.android.apps.muzei.api.MuzeiArtProvider" />
-			</intent-filter>
-			<meta-data
-				android:name="settingsActivity"
-				android:value="com.steven.muzeillect.SettingsActivity" />
-		</provider>
+      <meta-data
+        android:name="replacement"
+        android:value="com.steven.muzeillect.ArchillectArtProvider" />
+      <meta-data
+        android:name="color"
+        android:value="@color/colorPrimary" />
+      <meta-data
+        android:name="settingsActivity"
+        android:value="com.steven.muzeillect.SettingsActivity" />
+    </service>
+    <provider
+      android:name=".ArchillectArtProvider"
+      android:authorities="com.steven.muzeillect"
+      android:description="@string/source_desc"
+      android:exported="true"
+      android:label="@string/source_label"
+      android:permission="com.google.android.apps.muzei.api.ACCESS_PROVIDER">
+      <intent-filter>
+        <action android:name="com.google.android.apps.muzei.api.MuzeiArtProvider" />
+      </intent-filter>
+      <meta-data
+        android:name="settingsActivity"
+        android:value="com.steven.muzeillect.SettingsActivity" />
+    </provider>
 
-		<activity
-			android:name=".SettingsActivity"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
+    <activity
+      android:name=".SettingsActivity"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
 
-		<activity
-			android:name=".PermissionRequestActivity"
-			android:theme="@style/TranslucentTheme" />
+    <activity
+      android:name=".PermissionRequestActivity"
+      android:theme="@style/TranslucentTheme" />
 
-	</application>
-
+  </application>
 </manifest>

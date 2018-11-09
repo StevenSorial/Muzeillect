@@ -21,53 +21,52 @@ import java.util.concurrent.TimeUnit.SECONDS
 @TargetApi(Build.VERSION_CODES.KITKAT)
 class ArchillectArtProvider : MuzeiArtProvider() {
 
-	companion object {
-		private const val COMMAND_ID_SHARE = 111
-		private const val COMMAND_ID_SAVE = 222
-	}
+  companion object {
+    private const val COMMAND_ID_SHARE = 111
+    private const val COMMAND_ID_SAVE = 222
+  }
 
-	override fun onLoadRequested(initial: Boolean) {
-		Timber.i("load requested")
+  override fun onLoadRequested(initial: Boolean) {
+    Timber.i("load requested")
 
-		val workManager = WorkManager.getInstance()
-		val worker = OneTimeWorkRequestBuilder<ArchillectWorker>()
-				.setInputData(workDataOf(Pair("oldToken", getCurrentArtwork(context)?.token?.toLongOrNull()
-						?: -1)))
-				.setConstraints(Constraints.Builder()
-						.setRequiredNetworkType(NetworkType.CONNECTED)
-						.build())
-				.build()
-		workManager.enqueue(worker)
-	}
+    val workManager = WorkManager.getInstance()
+    val worker = OneTimeWorkRequestBuilder<ArchillectWorker>()
+        .setInputData(workDataOf(Pair("oldToken", getCurrentArtwork(context)?.token?.toLongOrNull()
+            ?: -1)))
+        .setConstraints(Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build())
+        .build()
+    workManager.enqueue(worker)
+  }
 
-	override fun getCommands(artwork: Artwork): List<UserCommand> = context?.run {
-		listOf(
-				UserCommand(COMMAND_ID_SAVE, context?.getString(R.string.action_save)),
-				UserCommand(COMMAND_ID_SHARE, context?.getString(R.string.action_share)))
-	} ?: super.getCommands(artwork)
+  override fun getCommands(artwork: Artwork): List<UserCommand> = context?.run {
+    listOf(
+        UserCommand(COMMAND_ID_SAVE, context?.getString(R.string.action_save)),
+        UserCommand(COMMAND_ID_SHARE, context?.getString(R.string.action_share)))
+  } ?: super.getCommands(artwork)
 
-	override fun onCommand(artwork: Artwork, id: Int) {
-		context?.run {
-			when (id) {
-				COMMAND_ID_SAVE -> ArchillectCore.saveImage(this, API.NEW, artwork)
-				COMMAND_ID_SHARE -> ArchillectCore.shareImage(this, API.NEW, artwork)
-			}
-		}
-	}
+  override fun onCommand(artwork: Artwork, id: Int) {
+    context?.run {
+      when (id) {
+        COMMAND_ID_SAVE -> ArchillectCore.saveImage(this, API.NEW, artwork)
+        COMMAND_ID_SHARE -> ArchillectCore.shareImage(this, API.NEW, artwork)
+      }
+    }
+  }
 
-	override fun openFile(artwork: Artwork): InputStream {
-		Timber.i("opening file")
-		return super.openFile(artwork).also {
-			artwork.persistentUri?.toString()?.run {
-				try {
-					val client = OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
-					val req = Request.Builder().url(this).build()
-					client.newCall(req).execute().body()?.byteStream()
-				} catch (e: Exception) {
-					Timber.e(e, "Error opening file")
-				}
-
-			}
-		}
-	}
+  override fun openFile(artwork: Artwork): InputStream {
+    Timber.i("opening file")
+    return super.openFile(artwork).also {
+      artwork.persistentUri?.toString()?.run {
+        try {
+          val client = OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
+          val req = Request.Builder().url(this).build()
+          client.newCall(req).execute().body()?.byteStream()
+        } catch (e: Exception) {
+          Timber.e(e, "Error opening file")
+        }
+      }
+    }
+  }
 }
