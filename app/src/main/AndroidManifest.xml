@@ -40,7 +40,7 @@
         android:value="com.steven.muzeillect.SettingsActivity" />
     </service>
     <provider
-      android:name=".ArchillectArtProvider"
+      android:name="com.steven.muzeillect.ArchillectArtProvider"
       android:authorities="com.steven.muzeillect"
       android:description="@string/source_desc"
       android:exported="true"
@@ -51,21 +51,21 @@
       </intent-filter>
       <meta-data
         android:name="settingsActivity"
-        android:value="com.steven.muzeillect.SettingsActivity" />
+        android:value="com.steven.muzeillect.MainActivity" />
     </provider>
 
     <activity
-      android:name=".SettingsActivity"
+      android:name="com.steven.muzeillect.PermissionRequestActivity"
+      android:theme="@style/TranslucentTheme" />
+
+    <activity
+      android:name="com.steven.muzeillect.MainActivity"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-
-    <activity
-      android:name=".PermissionRequestActivity"
-      android:theme="@style/TranslucentTheme" />
-
   </application>
+
 </manifest>
