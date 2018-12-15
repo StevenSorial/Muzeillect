@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 import com.google.android.apps.muzei.api.provider.ProviderContract
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
-class ArchillectWorker(val context: Context, workerParams: WorkerParameters)
+class ArchillectWorker(private val context: Context, workerParams: WorkerParameters)
   : Worker(context, workerParams) {
 
   private val archillectCore by lazy {
@@ -18,9 +18,9 @@ class ArchillectWorker(val context: Context, workerParams: WorkerParameters)
   override fun doWork(): Result {
 
     archillectCore.getMaxToken()
-    val artwork = archillectCore.getArtwork(API.NEW) as? NewAPIArtwork? ?: return Result.RETRY
-    ProviderContract.Artwork.addArtwork(context, "com.steven.muzeillect", artwork)
+    val artwork = archillectCore.getArtwork(API.NEW) as? NewAPIArtwork? ?: return Result.retry()
+    ProviderContract.getProviderClient(context, "com.steven.muzeillect").addArtwork(artwork)
 
-    return Result.SUCCESS
+    return Result.success()
   }
 }
