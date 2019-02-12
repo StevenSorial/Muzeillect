@@ -12,7 +12,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.muddzdev.styleabletoastlibrary.StyleableToast
+import com.muddzdev.styleabletoast.StyleableToast
 import java.util.Random
 import java.util.concurrent.ThreadLocalRandom
 
