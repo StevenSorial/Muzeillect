@@ -74,10 +74,7 @@ fun isPermissionGranted(context: Context, permission: String): Boolean {
 
 fun getArchillectLink(id: Long): String = BASE_URL + id
 
-fun getRandomLong(bound: Long): Long {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-    return ThreadLocalRandom.current().nextLong(bound)
-  } else {
-    return Random().nextInt(bound.toInt()).toLong()
-  }
+fun getRandomLong(bound: Long) = when {
+  Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> ThreadLocalRandom.current().nextLong(bound)
+  else -> Random().nextInt(bound.toInt()).toLong()
 }

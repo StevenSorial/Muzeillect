@@ -1,6 +1,7 @@
 package com.steven.muzeillect
 
 import android.content.Intent
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
 import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
@@ -21,27 +22,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
   override fun onResume() {
     super.onResume()
     val isMuzeiActive = try {
-      context!!.packageManager.getApplicationInfo(MUZEI_PACKAGE_NAME, 0).enabled
-    } catch (e: Exception) {
+      context?.packageManager?.getApplicationInfo(MUZEI_PACKAGE_NAME, 0)?.enabled == true
+    } catch (e: NameNotFoundException) {
       false
     }
     disableSettings(isMuzeiActive)
     val isNewAPI = try {
-      context!!.packageManager.getPackageInfo(MUZEI_PACKAGE_NAME, 0).versionName
-          .split(".")[0].toInt()
-    } catch (e: Exception) {
+      context?.packageManager?.getPackageInfo(MUZEI_PACKAGE_NAME, 0)?.versionName
+          ?.split(".")?.get(0)?.toInt() ?: 0
+    } catch (e: NameNotFoundException) {
       0
     } >= 3
 
     hideLegacySettings(!isNewAPI)
 
     (findPreference(getString(R.string.pref_key_open)) as? OpenPreference)?.run {
-      isVisible = if (activity?.isTaskRoot == true) {
-        true
-      } else {
-        false
-        return@run
-      }
+      isVisible = activity?.isTaskRoot == true
+      if (activity?.isTaskRoot != true) return@run
 
       title = if (isMuzeiActive) getString(R.string.pref_title_open) else getString(R.string.pref_title_install)
       summary = if (isMuzeiActive) getString(R.string.pref_desc_open, getString(R.string.app_name)) else getString(R.string.pref_desc_install)
