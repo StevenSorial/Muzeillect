@@ -37,7 +37,7 @@
         android:value="@color/colorPrimary" />
       <meta-data
         android:name="settingsActivity"
-        android:value="com.steven.muzeillect.SettingsActivity" />
+        android:value="com.steven.muzeillect.MainActivity" />
     </service>
     <provider
       android:name="com.steven.muzeillect.ArchillectArtProvider"
