@@ -38,6 +38,10 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     pref.getBoolean(context?.getString(R.string.pref_key_hd), false)
   }
 
+  private val blacklist by lazy {
+    pref.getStringSet(context?.getString(R.string.pref_key_blacklist), null) ?: emptySet()
+  }
+
   private val okHttpClient by lazy {
     OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
   }
@@ -119,6 +123,12 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
       return getArtwork(api)
     }
 
+    if (blacklist.contains(newToken.toString())) {
+      Timber.i("$newToken is blacklisted")
+      Timber.e(blacklist.toString())
+      return getArtwork(api)
+    }
+
     val imgUrl = getImageURL(newToken) ?: return null
 
     if (!isImageValid(imgUrl)) {
@@ -146,6 +156,10 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
   }
 
   companion object {
+    const val COMMAND_ID_SHARE = 111
+    const val COMMAND_ID_SAVE = 222
+    const val COMMAND_ID_BLACKLIST = 333
+
     fun saveImage(context: Context, api: API, artwork: Any?) {
       if (artwork == null) {
         Timber.e("No artwork available to save")

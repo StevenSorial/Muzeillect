@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   override fun onSupportNavigateUp(): Boolean {
-    return if (navController.currentDestination?.id == R.id.fragment_settings_container) {
+    return if (navController.currentDestination?.id == navController.graph.startDestination) {
       onBackPressed()
       true
     } else {

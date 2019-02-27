@@ -1,5 +1,8 @@
 package com.steven.muzeillect
 
+import android.preference.PreferenceManager
+import androidx.core.content.edit
+import com.google.android.apps.muzei.api.Artwork
 import com.google.android.apps.muzei.api.MuzeiArtSource
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource
 import com.google.android.apps.muzei.api.UserCommand
@@ -8,11 +11,6 @@ import java.util.Date
 import java.util.concurrent.TimeUnit.MINUTES
 
 class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
-
-  companion object {
-    private const val COMMAND_ID_SHARE = 111
-    private const val COMMAND_ID_SAVE = 222
-  }
 
   private val archillectCore by lazy {
     ArchillectCore(this, currentArtwork?.token?.toLongOrNull() ?: -1)
@@ -25,17 +23,30 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
 
     setUserCommands(
         UserCommand(MuzeiArtSource.BUILTIN_COMMAND_ID_NEXT_ARTWORK),
-        UserCommand(COMMAND_ID_SAVE, getString(R.string.action_save)),
-        UserCommand(COMMAND_ID_SHARE, getString(R.string.action_share))
+        UserCommand(ArchillectCore.COMMAND_ID_SAVE, getString(R.string.action_save)),
+        UserCommand(ArchillectCore.COMMAND_ID_SHARE, getString(R.string.action_share)),
+        UserCommand(ArchillectCore.COMMAND_ID_BLACKLIST, getString(R.string.action_blacklist))
     )
   }
 
   override fun onCustomCommand(id: Int) {
     super.onCustomCommand(id)
     when (id) {
-      COMMAND_ID_SAVE -> ArchillectCore.saveImage(this, API.OLD, currentArtwork)
-      COMMAND_ID_SHARE -> ArchillectCore.shareImage(this, API.OLD, currentArtwork)
+      ArchillectCore.COMMAND_ID_SAVE -> ArchillectCore.saveImage(this, API.OLD, currentArtwork)
+      ArchillectCore.COMMAND_ID_SHARE -> ArchillectCore.shareImage(this, API.OLD, currentArtwork)
+      ArchillectCore.COMMAND_ID_BLACKLIST -> addToBlacklist(currentArtwork)
     }
+  }
+
+  private fun addToBlacklist(artwork: Artwork?) {
+    artwork?.token?.toLongOrNull() ?: return
+    val prefs = PreferenceManager.getDefaultSharedPreferences(this) ?: return
+    val prefKey = getString(R.string.pref_key_blacklist) ?: return
+    val originalSet = prefs.getStringSet(prefKey, null) ?: emptySet()
+    val newSet = HashSet(originalSet)
+    newSet.add(artwork.token)
+    prefs.edit { putStringSet(prefKey, newSet) }
+    onTryUpdate(MuzeiArtSource.UPDATE_REASON_USER_NEXT)
   }
 
   @Throws(RetryException::class)

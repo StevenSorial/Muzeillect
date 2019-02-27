@@ -4,13 +4,15 @@
   <string name="source_label">@string/app_name</string>
   <string name="source_desc">Images from Archillect</string>
 
-  <string name="action_save">Save Image</string>
-  <string name="action_share">Share Image</string>
+  <string name="action_save">Save Artwork</string>
+  <string name="action_share">Share Artwork</string>
+  <string name="action_blacklist">Add to Blacklist</string>
 
   <string name="pref_key_wifi">pref_wifi</string>
   <string name="pref_key_hd">pref_hd</string>
   <string name="pref_key_interval">pref_interval</string>
   <string name="pref_key_open">pref_open</string>
+  <string name="pref_key_blacklist">pref_blacklist</string>
 
   <string name="pref_title_wifi">Download on Wi-Fi Only</string>
   <string name="pref_title_hd">HD Wallpapers Only</string>
