@@ -2,7 +2,6 @@ package com.steven.muzeillect
 
 import android.preference.PreferenceManager
 import androidx.core.content.edit
-import com.google.android.apps.muzei.api.Artwork
 import com.google.android.apps.muzei.api.MuzeiArtSource
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource
 import com.google.android.apps.muzei.api.UserCommand
@@ -38,7 +37,7 @@ class ArchillectArtSource : RemoteMuzeiArtSource("ArchillectArtSource") {
     }
   }
 
-  private fun addToBlacklist(artwork: Artwork?) {
+  private fun addToBlacklist(artwork: OldAPIArtwork?) {
     artwork?.token?.toLongOrNull() ?: return
     val prefs = PreferenceManager.getDefaultSharedPreferences(this) ?: return
     val prefKey = getString(R.string.pref_key_blacklist) ?: return

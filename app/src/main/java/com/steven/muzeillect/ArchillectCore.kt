@@ -9,7 +9,6 @@ import android.media.MediaScannerConnection
 import android.os.Environment
 import android.preference.PreferenceManager
 import androidx.core.net.toUri
-import com.google.android.apps.muzei.api.Artwork
 import com.google.android.apps.muzei.api.MuzeiContract
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -136,7 +135,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     }
 
     return if (api == API.OLD) {
-      Artwork.Builder()
+      com.google.android.apps.muzei.api.Artwork.Builder()
           .title(newToken.toString())
           .byline("Archillect")
           .imageUri(imgUrl.toUri())
