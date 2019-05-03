@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
@@ -22,7 +23,7 @@ const val MUZEI_PACKAGE_NAME = "net.nurik.roman.muzei"
 
 const val BASE_URL = "http://archillect.com/"
 
-const val KEY_PERMISSION: String = "permission"
+const val KEY_PERMISSION = "permission"
 
 const val EXTENSION_JPG = ".jpg"
 const val EXTENSION_PNG = ".png"
@@ -50,12 +51,18 @@ fun showToast(context: Context, message: String) {
   }
 }
 
-fun isConnectedToWifi(context: Context): Boolean {
-  val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-  val networkInfo = cm.activeNetworkInfo
-  return (networkInfo != null
-      && networkInfo.isConnected
-      && networkInfo.type == ConnectivityManager.TYPE_WIFI)
+@Suppress("DEPRECATION")
+fun isConnectedToWifi(context: Context?): Boolean {
+  val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    cm?.getNetworkCapabilities(cm.activeNetwork)?.run {
+      hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+    }
+  } else {
+    cm?.activeNetworkInfo?.run {
+      isConnected && type == ConnectivityManager.TYPE_WIFI
+    }
+  } ?: false
 }
 
 fun isExternalStorageWritable() = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED

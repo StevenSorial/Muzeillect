@@ -2,8 +2,8 @@ package com.steven.muzeillect
 
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
-import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.takisoft.preferencex.PreferenceFragmentCompat
 
@@ -29,7 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     disableSettings(isMuzeiActive)
     val isNewAPI = try {
       context?.packageManager?.getPackageInfo(MUZEI_PACKAGE_NAME, 0)?.versionName
-          ?.split(".")?.get(0)?.toInt() ?: 0
+          ?.split(".")?.firstOrNull()?.toInt() ?: 0
     } catch (e: NameNotFoundException) {
       0
     } >= 3
@@ -47,9 +47,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
           startActivity(context.packageManager.getLaunchIntentForPackage("net.nurik.roman.muzei"))
         } else {
           try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$MUZEI_PACKAGE_NAME")))
+            startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=$MUZEI_PACKAGE_NAME".toUri()))
           } catch (e: Exception) {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$MUZEI_PACKAGE_NAME")))
+            startActivity(Intent(Intent.ACTION_VIEW, "https://play.google.com/store/apps/details?id=$MUZEI_PACKAGE_NAME".toUri()))
           }
         }
       }
