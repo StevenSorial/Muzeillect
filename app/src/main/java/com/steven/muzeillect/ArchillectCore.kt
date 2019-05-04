@@ -135,13 +135,13 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     }
 
     return if (api == API.OLD) {
-      com.google.android.apps.muzei.api.Artwork.Builder()
-          .title(newToken.toString())
-          .byline("Archillect")
-          .imageUri(imgUrl.toUri())
-          .token(newToken.toString())
-          .viewIntent(Intent(Intent.ACTION_VIEW, getArchillectLink(newToken).toUri()))
-          .build()
+      com.google.android.apps.muzei.api.Artwork.Builder().apply {
+        title(newToken.toString())
+        byline("Archillect")
+        imageUri(imgUrl.toUri())
+        token(newToken.toString())
+        viewIntent(Intent(Intent.ACTION_VIEW, getArchillectLink(newToken).toUri()))
+      }.build()
     } else {
       NewAPIArtwork().apply {
         token = newToken.toString()

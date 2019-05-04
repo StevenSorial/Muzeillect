@@ -16,7 +16,6 @@ class ArchillectWorker(private val context: Context, workerParams: WorkerParamet
   }
 
   override fun doWork(): Result {
-
     archillectCore.getMaxToken()
     val artwork = archillectCore.getArtwork(API.NEW) as? NewAPIArtwork ?: return Result.retry()
     val provider = ProviderContract.getProviderClient(context, ArchillectArtProvider::class.java)
