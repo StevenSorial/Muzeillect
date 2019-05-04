@@ -19,7 +19,6 @@ class ArchillectWorker(private val context: Context, workerParams: WorkerParamet
     archillectCore.getMaxToken()
     val artwork = archillectCore.getArtwork(API.NEW) as? NewAPIArtwork ?: return Result.retry()
     val provider = ProviderContract.getProviderClient(context, ArchillectArtProvider::class.java)
-    context.contentResolver.delete(provider.contentUri, "${ProviderContract.Artwork.TOKEN}=?", arrayOf(artwork.token))
     provider.addArtwork(artwork)
     return Result.success()
   }
