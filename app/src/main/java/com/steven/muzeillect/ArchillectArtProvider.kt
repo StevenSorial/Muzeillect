@@ -9,12 +9,8 @@ import com.google.android.apps.muzei.api.MuzeiContract.Artwork.getCurrentArtwork
 import com.google.android.apps.muzei.api.UserCommand
 import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
 import com.google.android.apps.muzei.api.provider.ProviderContract
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import timber.log.Timber
 import java.io.InputStream
-import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 class ArchillectArtProvider : MuzeiArtProvider() {
@@ -59,17 +55,7 @@ class ArchillectArtProvider : MuzeiArtProvider() {
   }
 
   override fun openFile(artwork: NewAPIArtwork): InputStream {
-    Timber.i("opening file")
-    return super.openFile(artwork).also {
-      artwork.persistentUri?.toString()?.run {
-        try {
-          val client = OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
-          val req = Request.Builder().url(this).build()
-          client.newCall(req).execute().body()?.byteStream()
-        } catch (e: Exception) {
-          Timber.e(e, "Error opening file")
-        }
-      }
-    }
+    Timber.i("Opening file")
+    return super.openFile(artwork)
   }
 }

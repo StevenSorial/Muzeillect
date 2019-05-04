@@ -10,14 +10,11 @@ import android.os.Environment
 import android.preference.PreferenceManager
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.MuzeiContract
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.concurrent.thread
 
 class ArchillectCore(private val context: Context?, private val oldToken: Long = -1) {
@@ -39,10 +36,6 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 
   private val blacklist by lazy {
     pref.getStringSet(context?.getString(R.string.pref_key_blacklist), null) ?: emptySet()
-  }
-
-  private val okHttpClient by lazy {
-    OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
   }
 
   private var maxToken: Long = -1
@@ -100,6 +93,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
       val w = bitmap.width
       Timber.d("Image Resolution: $w x $h")
       bitmap.recycle()
+      response.body()?.close()
       if (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH) {
         Timber.i("Resolution is low")
         return false
