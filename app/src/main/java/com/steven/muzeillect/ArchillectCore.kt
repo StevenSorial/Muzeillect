@@ -46,8 +46,9 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
       val req = Request.Builder().url(BASE_URL).build()
       val docString = okHttpClient.newCall(req).execute().body()?.string()
       val doc = Jsoup.parse(docString)
-      val element = doc.select("div.overlay").first()
-      maxToken = element.text().toLong()
+      val element = doc.select("a.post").first().attributes().asList()[1].value
+          .removePrefix("/")
+      maxToken = element.toLong()
     } catch (e: Exception) {
       Timber.e(e, "Error getting max Token")
       maxToken = -1
