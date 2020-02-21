@@ -44,7 +44,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     try {
       Timber.i("Generating max Token")
       val req = Request.Builder().url(BASE_URL).build()
-      val docString = okHttpClient.newCall(req).execute().body()?.string()
+      val docString = okHttpClient.newCall(req).execute().body?.string()
       val doc = Jsoup.parse(docString)
       val element = doc.select("a.post").first().attributes().asList()[1].value
           .removePrefix("/")
@@ -59,7 +59,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     Timber.i("Generating Image Token")
     try {
       val req = Request.Builder().url(getArchillectLink(token)).build()
-      val docString = okHttpClient.newCall(req).execute().body()?.string()
+      val docString = okHttpClient.newCall(req).execute().body?.string()
       val doc = Jsoup.parse(docString)
       val img = doc.select("#ii").first()
       val imgUrl = img.attr("src")
@@ -80,12 +80,12 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     try {
       val req = Request.Builder().url(URLString).build()
       val response = okHttpClient.newCall(req).execute()
-      val responseCode = response.code()
+      val responseCode = response.code
       Timber.i("Response code $responseCode")
       if (responseCode != 200) return false
       if (!isHDOnly) return true
       Timber.i("Checking Image Size")
-      val bitmap = BitmapFactory.decodeStream(response.body()?.byteStream())
+      val bitmap = BitmapFactory.decodeStream(response.body?.byteStream())
       if (bitmap == null) {
         Timber.e("Decoding Image Failed")
         return false
@@ -94,7 +94,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
       val w = bitmap.width
       Timber.d("Image Resolution: $w x $h")
       bitmap.recycle()
-      response.body()?.close()
+      response.body?.close()
       if (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH) {
         Timber.i("Resolution is low")
         return false
