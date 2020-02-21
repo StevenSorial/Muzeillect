@@ -27,10 +27,13 @@ const val BASE_URL = "http://archillect.com/"
 const val KEY_PERMISSION = "permission"
 
 const val EXTENSION_JPG = ".jpg"
+const val EXTENSION_JPEG = ".jpeg"
 const val EXTENSION_PNG = ".png"
 
-const val MINIMUM_WIDTH = 1000
-const val MINIMUM_HEIGHT = 1000
+const val HD_TOLERANCE = 0.93
+
+const val MINIMUM_HD_WIDTH = 720 * HD_TOLERANCE
+const val MINIMUM_HD_HEIGHT = 1280 * HD_TOLERANCE
 
 private fun buildStyledToast(context: Context, message: String) {
   return StyleableToast.Builder(context)

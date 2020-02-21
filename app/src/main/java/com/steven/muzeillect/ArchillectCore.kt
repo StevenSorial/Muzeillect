@@ -17,6 +17,8 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.concurrent.thread
+import kotlin.math.max
+import kotlin.math.min
 
 class ArchillectCore(private val context: Context?, private val oldToken: Long = -1) {
 
@@ -38,7 +40,9 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     try {
       Timber.i("Generating max Token")
       val req = Request.Builder().url(BASE_URL).build()
-      val docString = okHttpClient.newCall(req).execute().body?.string()
+      val response = okHttpClient.newCall(req).execute()
+      val docString = response.body?.string()
+      response.close()
       val doc = Jsoup.parse(docString)
       val element = doc.select("a.post").first().attributes().asList()[1].value
           .removePrefix("/")
@@ -53,7 +57,9 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     Timber.i("Generating Image Token")
     try {
       val req = Request.Builder().url(getArchillectLink(token)).build()
-      val docString = okHttpClient.newCall(req).execute().body?.string()
+      val response = okHttpClient.newCall(req).execute()
+      val docString = response.body?.string()
+      response.close()
       val doc = Jsoup.parse(docString)
       val img = doc.select("#ii").first()
       val imgUrl = img.attr("src")
@@ -80,16 +86,15 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
       if (!isHDOnly) return true
       Timber.i("Checking Image Size")
       val bitmap = BitmapFactory.decodeStream(response.body?.byteStream())
+      response.close()
       if (bitmap == null) {
         Timber.e("Decoding Image Failed")
         return false
       }
-      val h = bitmap.height
-      val w = bitmap.width
+      val h = max(bitmap.height, bitmap.width)
+      val w = min(bitmap.height, bitmap.width)
       Timber.d("Image Resolution: $w x $h")
-      bitmap.recycle()
-      response.body?.close()
-      if (h < MINIMUM_HEIGHT || w < MINIMUM_WIDTH) {
+      if (h < MINIMUM_HD_HEIGHT || w < MINIMUM_HD_WIDTH) {
         Timber.i("Resolution is low")
         return false
       }
@@ -221,9 +226,9 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
   }
 }
 
-private fun isJPG(imgURL: String) = EXTENSION_JPG in imgURL
+private fun isJPG(imgURL: String) = imgURL.toLowerCase().contains(EXTENSION_JPG) || imgURL.toLowerCase().contains(EXTENSION_JPEG)
 
-private fun isPNG(imgURL: String) = EXTENSION_PNG in imgURL
+private fun isPNG(imgURL: String) = imgURL.toLowerCase().contains(EXTENSION_PNG)
 
 fun isJPGOrPNG(imgURL: String): Boolean {
   return isJPG(imgURL) || isPNG(imgURL)
