@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Bundle
 import androidx.core.net.toUri
+import androidx.preference.Preference
 import androidx.recyclerview.widget.RecyclerView
 import com.takisoft.preferencex.PreferenceFragmentCompat
 
@@ -57,13 +58,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
   }
 
   private fun hideLegacySettings(visible: Boolean) {
-    findPreference(context?.getString(R.string.pref_key_wifi)).isVisible = visible
-    findPreference(context?.getString(R.string.pref_key_interval)).isVisible = visible
+    findPreference<Preference>(context!!.getString(R.string.pref_key_wifi))!!.isVisible = visible
+    findPreference<Preference>(context!!.getString(R.string.pref_key_interval))!!.isVisible = visible
   }
 
   private fun disableSettings(enabled: Boolean) {
-    findPreference(context?.getString(R.string.pref_key_wifi)).isEnabled = enabled
-    findPreference(context?.getString(R.string.pref_key_interval)).isEnabled = enabled
-    findPreference(context?.getString(R.string.pref_key_hd)).isEnabled = enabled
+    findPreference<Preference>(context!!.getString(R.string.pref_key_wifi))!!.isEnabled = enabled
+    findPreference<Preference>(context!!.getString(R.string.pref_key_interval))!!.isEnabled = enabled
+    findPreference<Preference>(context!!.getString(R.string.pref_key_hd))!!.isEnabled = enabled
   }
 }
