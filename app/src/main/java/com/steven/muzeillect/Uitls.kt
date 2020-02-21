@@ -5,9 +5,6 @@ package com.steven.muzeillect
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
@@ -15,7 +12,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.muddzdev.styleabletoast.StyleableToast
 import okhttp3.OkHttpClient
-import java.util.Random
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -23,8 +19,6 @@ import java.util.concurrent.TimeUnit.SECONDS
 val okHttpClient: OkHttpClient by lazy {
   OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
 }
-
-const val RETRY_INTERVAL = 5L
 
 const val MUZEI_PACKAGE_NAME = "net.nurik.roman.muzei"
 
@@ -58,20 +52,6 @@ fun showToast(context: Context, message: String) {
   }
 }
 
-@Suppress("DEPRECATION")
-fun isConnectedToWifi(context: Context?): Boolean {
-  val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-    cm?.getNetworkCapabilities(cm.activeNetwork)?.run {
-      hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-    }
-  } else {
-    cm?.activeNetworkInfo?.run {
-      isConnected && type == ConnectivityManager.TYPE_WIFI
-    }
-  } ?: false
-}
-
 fun isExternalStorageWritable() = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
 
 fun isPermissionGranted(context: Context, permission: String): Boolean {
@@ -88,7 +68,4 @@ fun isPermissionGranted(context: Context, permission: String): Boolean {
 
 fun getArchillectLink(id: Long): String = BASE_URL + id
 
-fun getRandomLong(bound: Long) = when {
-  Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> ThreadLocalRandom.current().nextLong(bound)
-  else -> Random().nextInt(bound.toInt()).toLong()
-}
+fun getRandomLong(bound: Long) = ThreadLocalRandom.current().nextLong(bound)

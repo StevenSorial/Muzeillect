@@ -8,34 +8,16 @@
   <string name="action_share">Share Artwork</string>
   <string name="action_blacklist">Add to Blacklist</string>
 
-  <string name="pref_key_wifi">pref_wifi</string>
   <string name="pref_key_hd">pref_hd</string>
-  <string name="pref_key_interval">pref_interval</string>
   <string name="pref_key_open">pref_open</string>
   <string name="pref_key_blacklist">pref_blacklist</string>
 
-  <string name="pref_title_wifi">Download on Wi-Fi Only</string>
   <string name="pref_title_hd">HD Wallpapers Only</string>
-  <string name="pref_title_interval">Update Interval</string>
   <string name="pref_title_open">Open Muzei</string>
   <string name="pref_title_install">Install Muzei</string>
 
   <string name="pref_desc_open">Select %s in Muzei</string>
   <string name="pref_desc_install">Install Muzei from Google Play</string>
-
-  <string name="pref_interval_label_30_minutes">30 Minutes</string>
-  <string name="pref_interval_label_1_hour">1 Hour</string>
-  <string name="pref_interval_label_3_hours">3 Hours</string>
-  <string name="pref_interval_label_6_hours">6 Hours</string>
-  <string name="pref_interval_label_12_hours">12 Hours</string>
-
-  <string name="pref_interval_value_30_minutes">30</string>
-  <string name="pref_interval_value_1_hour">60</string>
-  <string name="pref_interval_value_3_hours">180</string>
-  <string name="pref_interval_value_6_hours">360</string>
-  <string name="pref_interval_value_12_hours">720</string>
-
-  <string name="pref_interval_value_default">@string/pref_interval_value_3_hours</string>
 
   <string name="message_save_exists">File already exists</string>
   <string name="message_save_complete">Image Saved</string>

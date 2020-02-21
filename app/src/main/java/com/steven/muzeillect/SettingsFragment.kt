@@ -28,14 +28,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
       false
     }
     disableSettings(isMuzeiActive)
-    val isNewAPI = try {
-      context?.packageManager?.getPackageInfo(MUZEI_PACKAGE_NAME, 0)?.versionName
-          ?.split(".")?.firstOrNull()?.toInt() ?: 0
-    } catch (e: NameNotFoundException) {
-      0
-    } >= 3
-
-    hideLegacySettings(!isNewAPI)
 
     (findPreference(getString(R.string.pref_key_open)) as? OpenPreference)?.run {
       isVisible = activity?.isTaskRoot == true
@@ -57,14 +49,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
   }
 
-  private fun hideLegacySettings(visible: Boolean) {
-    findPreference<Preference>(context!!.getString(R.string.pref_key_wifi))!!.isVisible = visible
-    findPreference<Preference>(context!!.getString(R.string.pref_key_interval))!!.isVisible = visible
-  }
-
   private fun disableSettings(enabled: Boolean) {
-    findPreference<Preference>(context!!.getString(R.string.pref_key_wifi))!!.isEnabled = enabled
-    findPreference<Preference>(context!!.getString(R.string.pref_key_interval))!!.isEnabled = enabled
     findPreference<Preference>(context!!.getString(R.string.pref_key_hd))!!.isEnabled = enabled
   }
 }

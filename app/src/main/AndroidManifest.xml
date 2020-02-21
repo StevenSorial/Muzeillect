@@ -5,8 +5,6 @@
   package="com.steven.muzeillect">
 
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application
@@ -19,26 +17,6 @@
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true"
     tools:ignore="GoogleAppIndexingWarning">
-    <service
-      android:name=".ArchillectArtSource"
-      android:description="@string/source_desc"
-      android:icon="@drawable/logo"
-      android:label="@string/source_label">
-
-      <intent-filter>
-        <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
-      </intent-filter>
-
-      <meta-data
-        android:name="replacement"
-        android:value="com.steven.muzeillect.ArchillectArtProvider" />
-      <meta-data
-        android:name="color"
-        android:value="@color/colorPrimary" />
-      <meta-data
-        android:name="settingsActivity"
-        android:value="com.steven.muzeillect.MainActivity" />
-    </service>
     <provider
       android:name="com.steven.muzeillect.ArchillectArtProvider"
       android:authorities="com.steven.muzeillect"

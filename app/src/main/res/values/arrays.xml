@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string-array name="pref_labels_interval">
-    <item>@string/pref_interval_label_30_minutes</item>
-    <item>@string/pref_interval_label_1_hour</item>
-    <item>@string/pref_interval_label_3_hours</item>
-    <item>@string/pref_interval_label_6_hours</item>
-    <item>@string/pref_interval_label_12_hours</item>
-  </string-array>
 
-  <string-array name="pref_values_interval">
-    <item>@string/pref_interval_value_30_minutes</item>
-    <item>@string/pref_interval_value_1_hour</item>
-    <item>@string/pref_interval_value_3_hours</item>
-    <item>@string/pref_interval_value_6_hours</item>
-    <item>@string/pref_interval_value_12_hours</item>
-  </string-array>
 </resources>

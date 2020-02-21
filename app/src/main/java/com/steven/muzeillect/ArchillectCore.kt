@@ -7,8 +7,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaScannerConnection
 import android.os.Environment
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import androidx.core.net.toUri
+import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.MuzeiContract
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -22,14 +23,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
   private val pref by lazy {
     PreferenceManager.getDefaultSharedPreferences(context)
   }
-  val updateInterval by lazy {
-    pref.getString(context?.getString(R.string.pref_key_interval),
-        context?.getString(R.string.pref_interval_value_default))
-        ?.toLongOrNull() ?: 180
-  }
-  val isOnWiFiOnly by lazy {
-    pref.getBoolean(context?.getString(R.string.pref_key_wifi), false)
-  }
+
   private val isHDOnly by lazy {
     pref.getBoolean(context?.getString(R.string.pref_key_hd), false)
   }
@@ -106,7 +100,7 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     return true
   }
 
-  fun getArtwork(api: API): Any? {
+  fun getArtwork(): Artwork? {
 
     val newToken = if (maxToken > 0) getRandomLong(maxToken) + 1 else return null
 
@@ -114,38 +108,28 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
 
     if (oldToken == newToken) {
       Timber.i("New token is the Same as old one")
-      return getArtwork(api)
+      return getArtwork()
     }
 
     if (blacklist.contains(newToken.toString())) {
       Timber.i("$newToken is blacklisted")
       Timber.e(blacklist.toString())
-      return getArtwork(api)
+      return getArtwork()
     }
 
     val imgUrl = getImageURL(newToken) ?: return null
 
     if (!isImageValid(imgUrl)) {
-      return getArtwork(api)
+      return getArtwork()
     }
 
-    return if (api == API.OLD) {
-      com.google.android.apps.muzei.api.Artwork.Builder().apply {
-        title(newToken.toString())
-        byline("Archillect")
-        imageUri(imgUrl.toUri())
-        token(newToken.toString())
-        viewIntent(Intent(Intent.ACTION_VIEW, getArchillectLink(newToken).toUri()))
-      }.build()
-    } else {
-      NewAPIArtwork().apply {
-        token = newToken.toString()
-        title = newToken.toString()
-        byline = "Archillect"
-        webUri = getArchillectLink(newToken).toUri()
-        metadata = getArchillectLink(newToken)
-        persistentUri = imgUrl.toUri()
-      }
+    return Artwork().apply {
+      token = newToken.toString()
+      title = newToken.toString()
+      byline = "Archillect"
+      webUri = getArchillectLink(newToken).toUri()
+      metadata = getArchillectLink(newToken)
+      persistentUri = imgUrl.toUri()
     }
   }
 
@@ -154,21 +138,13 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
     const val COMMAND_ID_SAVE = 222
     const val COMMAND_ID_BLACKLIST = 333
 
-    fun saveImage(context: Context, api: API, artwork: Any?) {
+    fun saveImage(context: Context, artwork: Artwork?) {
       if (artwork == null) {
         Timber.e("No artwork available to save")
         return
       }
-      val uri = if (api == API.OLD) {
-        (artwork as OldAPIArtwork).imageUri
-      } else {
-        (artwork as NewAPIArtwork).persistentUri
-      }
-      val token = if (api == API.OLD) {
-        (artwork as OldAPIArtwork).token
-      } else {
-        (artwork as NewAPIArtwork).token
-      }
+      val uri = artwork.persistentUri
+      val token = artwork.token
       if (!isExternalStorageWritable()) {
         Timber.e("Storage is Not Writable")
         return
@@ -229,16 +205,12 @@ class ArchillectCore(private val context: Context?, private val oldToken: Long =
       }
     }
 
-    fun shareImage(context: Context, api: API, artwork: Any?) {
+    fun shareImage(context: Context, artwork: Artwork?) {
       if (artwork == null) {
         Timber.e("No artwork available to share")
         return
       }
-      val token = if (api == API.OLD) {
-        (artwork as OldAPIArtwork).token
-      } else {
-        (artwork as NewAPIArtwork).token!!
-      }
+      val token = artwork.token!!
       val i = Intent()
       i.action = Intent.ACTION_SEND
       i.putExtra(Intent.EXTRA_TEXT, getArchillectLink(token.toLong()))
@@ -255,11 +227,4 @@ private fun isPNG(imgURL: String) = EXTENSION_PNG in imgURL
 
 fun isJPGOrPNG(imgURL: String): Boolean {
   return isJPG(imgURL) || isPNG(imgURL)
-}
-
-typealias NewAPIArtwork = com.google.android.apps.muzei.api.provider.Artwork
-typealias OldAPIArtwork = com.google.android.apps.muzei.api.Artwork
-
-enum class API {
-  OLD, NEW
 }

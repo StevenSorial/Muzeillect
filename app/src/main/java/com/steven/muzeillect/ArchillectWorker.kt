@@ -1,13 +1,10 @@
 package com.steven.muzeillect
 
-import android.annotation.TargetApi
 import android.content.Context
-import android.os.Build
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.google.android.apps.muzei.api.provider.ProviderContract
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
 class ArchillectWorker(private val context: Context, workerParams: WorkerParameters)
   : Worker(context, workerParams) {
 
@@ -17,7 +14,7 @@ class ArchillectWorker(private val context: Context, workerParams: WorkerParamet
 
   override fun doWork(): Result {
     archillectCore.getMaxToken()
-    val artwork = archillectCore.getArtwork(API.NEW) as? NewAPIArtwork ?: return Result.retry()
+    val artwork = archillectCore.getArtwork() ?: return Result.retry()
     val provider = ProviderContract.getProviderClient(context, ArchillectArtProvider::class.java)
     provider.addArtwork(artwork)
     return Result.success()

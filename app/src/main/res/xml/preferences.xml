@@ -5,22 +5,8 @@
 
   <SwitchPreferenceCompat
     android:defaultValue="false"
-    android:key="@string/pref_key_wifi"
-    android:title="@string/pref_title_wifi"
-    app:iconSpaceReserved="false" />
-  <SwitchPreferenceCompat
-    android:defaultValue="false"
     android:key="@string/pref_key_hd"
     android:title="@string/pref_title_hd"
-    app:iconSpaceReserved="false" />
-  <ListPreference
-    android:defaultValue="@string/pref_interval_value_default"
-    android:dialogTitle=""
-    android:entries="@array/pref_labels_interval"
-    android:entryValues="@array/pref_values_interval"
-    android:key="@string/pref_key_interval"
-    android:summary="%s"
-    android:title="@string/pref_title_interval"
     app:iconSpaceReserved="false" />
 
   <com.steven.muzeillect.OpenPreference
