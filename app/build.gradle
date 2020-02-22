@@ -12,6 +12,7 @@ android {
     targetSdkVersion 29
     versionCode 9
     versionName "2.2.1"
+    vectorDrawables.useSupportLibrary = true
   }
   bundle {
     density.enableSplit true

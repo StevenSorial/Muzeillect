@@ -7,15 +7,15 @@
       android:translateY="93">
     <path
         android:pathData="m53.1429,0h8.8571v62h-8.8571z"
-        android:fillColor="#f5f5f5"
+        android:fillColor="@color/colorLight"
         android:fillType="evenOdd"/>
     <path
         android:pathData="m0,0h8.8571v62h-8.8571z"
-        android:fillColor="#f5f5f5"
+        android:fillColor="@color/colorLight"
         android:fillType="evenOdd"/>
     <path
         android:pathData="m26.5714,0h8.8571v62h-8.8571z"
-        android:fillColor="#f5f5f5"
+        android:fillColor="@color/colorLight"
         android:fillType="evenOdd"/>
   </group>
 </vector>

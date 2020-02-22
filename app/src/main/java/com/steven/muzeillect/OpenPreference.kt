@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.Preference
 
+@Suppress("unused")
 class OpenPreference : Preference {
 
   var onClickBlock: (Preference) -> (Unit) = {}

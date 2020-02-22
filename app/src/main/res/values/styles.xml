@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-  <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+  <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorAccent</item>
     <item name="colorAccent">@color/colorAccent</item>
@@ -9,8 +9,9 @@
     <item name="android:textColorPrimary">@color/colorAccent</item>
     <item name="android:textColorSecondary">@color/colorAccent</item>
     <item name="android:windowBackground">@color/colorPrimary</item>
-    <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-    <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/colorAccent</item>
+    <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/light_status_bar</item>
+    <item name="android:navigationBarColor">@color/colorAccent</item>
+    <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/light_navigation_bar</item>
   </style>
 
   <style name="TranslucentTheme" parent="AppTheme">
