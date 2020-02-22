@@ -33,7 +33,8 @@
 
     <activity
       android:name="com.steven.muzeillect.PermissionRequestActivity"
-      android:theme="@style/TranslucentTheme" />
+      android:excludeFromRecents="true"
+      android:theme="@style/TransparentTheme" />
 
     <activity
       android:name="com.steven.muzeillect.MainActivity"

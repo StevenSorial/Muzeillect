@@ -25,11 +25,11 @@ class MainActivity : AppCompatActivity() {
   }
 
   override fun onSupportNavigateUp(): Boolean {
-    return if (navController.currentDestination?.id == navController.graph.startDestination) {
+    if (navController.currentDestination?.id == navController.graph.startDestination) {
       onBackPressed()
-      true
+      return true
     } else {
-      navController.navigateUp(appBarConfiguration)
+      return navController.navigateUp(appBarConfiguration)
     }
   }
 }
