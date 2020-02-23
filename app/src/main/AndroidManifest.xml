@@ -5,7 +5,7 @@
   package="com.steven.muzeillect">
 
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
 
   <application
     android:name="com.steven.muzeillect.MuzeillectApp"

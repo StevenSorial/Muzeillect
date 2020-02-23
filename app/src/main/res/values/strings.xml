@@ -19,10 +19,8 @@
   <string name="pref_desc_open">Select %s in Muzei</string>
   <string name="pref_desc_install">Install Muzei from Google Play</string>
 
-  <string name="message_save_exists">File already exists</string>
   <string name="message_save_complete">Image Saved</string>
   <string name="message_save_error">Saving Error</string>
-  <string name="message_permission_not_granted">Permission is not granted</string>
-
+  <string name="message_permission_grant_first">Permission needs to be granted first</string>
 
 </resources>

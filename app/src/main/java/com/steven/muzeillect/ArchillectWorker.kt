@@ -9,7 +9,7 @@ class ArchillectWorker(private val context: Context, workerParams: WorkerParamet
   : Worker(context, workerParams) {
 
   private val archillectCore by lazy {
-    ArchillectCore(context, inputData.getString("oldToken")?.toLongOrNull() ?: -1)
+    ArchillectCore(context)
   }
 
   override fun doWork(): Result {

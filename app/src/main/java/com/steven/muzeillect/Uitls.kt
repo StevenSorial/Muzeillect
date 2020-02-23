@@ -39,9 +39,9 @@ private fun buildStyledToast(context: Context, message: String) {
   return StyleableToast.Builder(context)
       .length(Toast.LENGTH_SHORT)
       .text(message)
-      .textColor(ContextCompat.getColor(context, R.color.colorAccent))
+      .textColor(ContextCompat.getColor(context, R.color.colorPrimary))
       .font(R.font.inconsolata)
-      .backgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
+      .backgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
       .show()
 }
 
@@ -55,20 +55,10 @@ fun showToast(context: Context, message: String) {
   }
 }
 
-fun isExternalStorageWritable() = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
-
-fun isPermissionGranted(context: Context, permission: String): Boolean {
-
-  if (ContextCompat.checkSelfPermission(context, permission)
-      == PackageManager.PERMISSION_GRANTED) return true
-
-  val i = Intent(context, PermissionRequestActivity::class.java)
-  i.putExtra(KEY_PERMISSION, permission)
-  i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-  context.startActivity(i)
-  return false
+fun Context.isPermissionGranted(permission: String): Boolean {
+  return when(ContextCompat.checkSelfPermission(this, permission)){
+    PackageManager.PERMISSION_GRANTED -> true
+    PackageManager.PERMISSION_DENIED -> false
+    else -> throw RuntimeException("unknown permission status")
+  }
 }
-
-fun getArchillectLink(id: Long): String = BASE_URL + id
-
-fun getRandomLong(bound: Long) = ThreadLocalRandom.current().nextLong(bound)
