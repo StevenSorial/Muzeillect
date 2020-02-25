@@ -1,23 +1,14 @@
 package com.steven.muzeillect
 
-import android.Manifest
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaScannerConnection
-import android.os.Environment
 import androidx.preference.PreferenceManager
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.provider.Artwork
-import com.google.android.apps.muzei.api.MuzeiContract
 import okhttp3.Request
 import org.jsoup.Jsoup
 import timber.log.Timber
-import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.math.min
 
@@ -74,7 +65,7 @@ class ArchillectCore(private val context: Context?) {
 
   private fun isImageValid(URLString: String): Boolean {
     Timber.i("Validating Image")
-    if (!isJPGOrPNG(URLString)) {
+    if (!isImageTypeValid(URLString)) {
       Timber.i("Invalid Format")
       return false
     }
@@ -133,12 +124,11 @@ class ArchillectCore(private val context: Context?) {
       persistentUri = imgUrl.toUri()
     }
   }
-}
 
-private fun isJPG(imgURL: String) = imgURL.toLowerCase().contains(EXTENSION_JPG) || imgURL.toLowerCase().contains(EXTENSION_JPEG)
-
-private fun isPNG(imgURL: String) = imgURL.toLowerCase().contains(EXTENSION_PNG)
-
-fun isJPGOrPNG(imgURL: String): Boolean {
-  return isJPG(imgURL) || isPNG(imgURL)
+  private fun isImageTypeValid(imgURL: String): Boolean {
+    return when (imgURL.toUri().extension) {
+      "jpg", "jpeg", "png" -> true
+      else -> false
+    }
+  }
 }

@@ -17,7 +17,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
   override fun onStart() {
     super.onStart()
     setDivider(null)
-    listView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+    listView!!.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
   }
 
   override fun onResume() {
@@ -29,7 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
     disableSettings(isMuzeiActive)
 
-    (findPreference(getString(R.string.pref_key_open)) as? OpenPreference)?.run {
+    (findPreference<OpenPreference>(getString(R.string.pref_key_open)))!!.run {
       isVisible = activity?.isTaskRoot == true
       if (activity?.isTaskRoot != true) return@run
 
@@ -50,6 +50,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
   }
 
   private fun disableSettings(enabled: Boolean) {
-    findPreference<Preference>(context!!.getString(R.string.pref_key_hd))!!.isEnabled = enabled
+    findPreference<Preference>(requireContext().getString(R.string.pref_key_hd))!!.isEnabled = enabled
   }
 }

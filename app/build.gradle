@@ -1,6 +1,5 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
@@ -13,6 +12,7 @@ android {
     versionCode 9
     versionName "2.2.1"
     vectorDrawables.useSupportLibrary = true
+    viewBinding.enabled = true
   }
   bundle {
     density.enableSplit true

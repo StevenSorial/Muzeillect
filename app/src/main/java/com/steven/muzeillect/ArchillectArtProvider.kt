@@ -1,11 +1,7 @@
 package com.steven.muzeillect
 
 import android.annotation.TargetApi
-import android.app.Application
-import android.net.Uri
 import android.os.Build
-import androidx.preference.PreferenceManager
-import androidx.core.content.edit
 import androidx.work.WorkManager
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Constraints
@@ -14,7 +10,6 @@ import androidx.work.ExistingWorkPolicy
 import com.google.android.apps.muzei.api.UserCommand
 import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
-import com.google.android.apps.muzei.api.provider.ProviderContract
 import timber.log.Timber
 import java.io.InputStream
 
@@ -44,7 +39,7 @@ class ArchillectArtProvider : MuzeiArtProvider() {
   override fun onCommand(artwork: Artwork, id: Int) {
     if (context == null) return
     when (id) {
-      ArchillectCommands.ID_SAVE -> ArchillectCommands.save(this, artwork)
+      ArchillectCommands.ID_SAVE -> ArchillectCommands.saveImage(this, artwork)
       ArchillectCommands.ID_SHARE -> ArchillectCommands.shareImage(this, artwork)
       ArchillectCommands.ID_BLACKLIST -> ArchillectCommands.addToBlacklist(this,artwork)
     }

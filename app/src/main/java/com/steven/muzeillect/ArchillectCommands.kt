@@ -28,24 +28,12 @@ import okio.sink
 import okio.source
 import timber.log.Timber
 import java.io.File
-
+import java.lang.RuntimeException
 
 object ArchillectCommands {
   const val ID_SHARE = 111
   const val ID_SAVE = 222
   const val ID_BLACKLIST = 333
-
-  fun shareImage(provider: ArchillectArtProvider, artwork: Artwork) {
-    val context = provider.context!!
-    val token = artwork.token!!
-    val i = Intent()
-    i.action = Intent.ACTION_SEND
-
-    i.putExtra(Intent.EXTRA_TEXT, BASE_URL + token.toLong())
-    i.type = "text/plain"
-    context.startActivity(Intent.createChooser(i, context.getString(R.string.action_share))
-        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-  }
 
   fun addToBlacklist(provider: ArchillectArtProvider, artwork: Artwork) {
     val context = provider.context!!
@@ -60,7 +48,19 @@ object ArchillectCommands {
     }
   }
 
-  fun save(provider: ArchillectArtProvider, artwork: Artwork) {
+  fun shareImage(provider: ArchillectArtProvider, artwork: Artwork) {
+    val context = provider.context!!
+    val token = artwork.token!!
+    val i = Intent()
+    i.action = Intent.ACTION_SEND
+
+    i.putExtra(Intent.EXTRA_TEXT, BASE_URL + token.toLong())
+    i.type = "text/plain"
+    context.startActivity(Intent.createChooser(i, context.getString(R.string.action_share))
+        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+  }
+
+  fun saveImage(provider: ArchillectArtProvider, artwork: Artwork) {
     val context = provider.context!!
     when {
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> saveQ(context, artwork)
@@ -85,7 +85,7 @@ object ArchillectCommands {
       Timber.d("Saving Image for Q")
       val contentValues = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, artwork.token!!)
-        put(MediaStore.MediaColumns.MIME_TYPE, artwork.getMimeType())
+        put(MediaStore.MediaColumns.MIME_TYPE, artwork.mimeType)
         put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/Archillect")
         put(IS_PENDING, 1)
       }
@@ -113,7 +113,7 @@ object ArchillectCommands {
         return@withContext context.saveImplFailed(uri)
       }
       Timber.d("image saved")
-      showToast(context, context.getString(R.string.message_save_complete))
+      context.showToast(context.getString(R.string.message_save_complete))
       resolver.update(uri, ContentValues().apply { put(IS_PENDING, 0) }, null, null)
     }
   }
@@ -122,7 +122,7 @@ object ArchillectCommands {
     val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
     val isPermissionGranted = context.isPermissionGranted(permission)
     if (!isPermissionGranted) {
-      showToast(context, context.getString(R.string.message_permission_grant_first))
+      context.showToast(context.getString(R.string.message_permission_grant_first))
       val i = Intent(context, PermissionRequestActivity::class.java)
       i.putExtra(KEY_PERMISSION, permission)
       i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -138,7 +138,7 @@ object ArchillectCommands {
   private suspend fun saveLegacyImpl(context: Context, artwork: Artwork) {
     if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
       Timber.e("Storage is Not Writable")
-      return showToast(context, context.getString(R.string.message_save_error))
+      return context.showToast(context.getString(R.string.message_save_error))
     }
     Timber.d("Saving Image for Legacy")
     withContext(Dispatchers.IO) {
@@ -151,24 +151,24 @@ object ArchillectCommands {
         folder.mkdirs()
       } catch (e: Exception){
         Timber.e(e,"folder creation failed")
-        return@withContext showToast(context, context.getString(R.string.message_save_error))
+        return@withContext context.showToast(context.getString(R.string.message_save_error))
       }
-      val file = File(folder, artwork.getFileName())
+      val file = File(folder, artwork.fileName)
       val resolver = context.contentResolver
       val inputUri = MuzeiContract.Artwork.CONTENT_URI
       Timber.d("opening inputStream")
       val inputStream = try { resolver.openInputStream(inputUri) } catch (e: Exception) { Timber.e(e); null }
-          ?: return@withContext showToast(context, context.getString(R.string.message_save_error))
+          ?: return@withContext context.showToast(context.getString(R.string.message_save_error))
       try {
         val sink = file.sink().buffer()
         inputStream.source().let { sink.writeAll(it) }
         sink.close()
       } catch (e: Exception) {
         Timber.e(e, "Saving Image Okio error")
-        return@withContext showToast(context, context.getString(R.string.message_save_error))
+        return@withContext context.showToast(context.getString(R.string.message_save_error))
       }
       Timber.d("image saved")
-      showToast(context, context.getString(R.string.message_save_complete))
+      context.showToast(context.getString(R.string.message_save_complete))
       MediaScannerConnection.scanFile(
           context,
           arrayOf(file.absolutePath),
@@ -184,30 +184,22 @@ object ArchillectCommands {
       val contentValues = ContentValues().apply { put(IS_PENDING, 0) }
       contentResolver.update(it, contentValues, null, null)
     }
-    showToast(this, getString(R.string.message_save_error))
+    showToast(getString(R.string.message_save_error))
   }
 
-  private fun Artwork.getMimeType(): String {
-    return when(getType()){
-      JPEG -> "image/jpeg"
-      else -> "image/png"
+  private val Artwork.mimeType: String
+    get() {
+      return when (val ext = persistentUri!!.extension) {
+        "jpg", "jpeg" -> "image/jpeg"
+        "png" -> "image/png"
+        else -> throw RuntimeException("Should not happen. Unexpected artwork extension $ext")
+      }
     }
-  }
 
-  private fun Artwork.getFileName(): String {
-    val ext = when(getType()){
-      JPEG -> EXTENSION_JPG
-      else -> EXTENSION_PNG
+  private val Artwork.fileName: String
+    get() {
+      var ext = persistentUri!!.extension!!
+      if (ext == "jpeg") ext = "jpg"
+      return token!! + "." + ext
     }
-    return token!! + ext
-  }
-
-  private fun Artwork.getType(): Bitmap.CompressFormat {
-    val url = persistentUri!!.toString().toLowerCase()
-    if (url.contains(EXTENSION_JPG) || url.contains(EXTENSION_JPEG)) {
-      return JPEG
-    } else {
-      return PNG
-    }
-  }
 }
