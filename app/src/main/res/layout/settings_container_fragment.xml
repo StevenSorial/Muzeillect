@@ -10,7 +10,7 @@
     android:layout_width="wrap_content"
     android:tint="@color/colorAccent"
     android:layout_height="wrap_content"
-    android:src="@drawable/logo"
+    android:src="@drawable/logo_thick"
     app:layout_constraintBottom_toTopOf="@+id/fragment_settings"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
