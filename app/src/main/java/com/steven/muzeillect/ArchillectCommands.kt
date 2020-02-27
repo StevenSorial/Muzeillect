@@ -2,18 +2,20 @@ package com.steven.muzeillect
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Bitmap.CompressFormat.JPEG
-import android.graphics.Bitmap.CompressFormat.PNG
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.IS_PENDING
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.google.android.apps.muzei.api.MuzeiContract
@@ -50,14 +52,58 @@ object ArchillectCommands {
 
   fun shareImage(provider: ArchillectArtProvider, artwork: Artwork) {
     val context = provider.context!!
+    when {
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> shareQ(context, artwork)
+      else -> shareLegacy(context, artwork)
+    }
+  }
+
+  @TargetApi(Build.VERSION_CODES.Q)
+  private fun shareQ(context: Context, artwork: Artwork) {
+    val notificationManager = NotificationManagerCompat.from(context)
+    val channelId = context.getString(R.string.share_channel_id)
+    val channelName = context.getString(R.string.share_channel_name)
+    val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH).apply {
+      setShowBadge(false)
+      enableVibration(false)
+      enableLights(false)
+      description = context.getString(R.string.share_channel_desc)
+      setSound(null, null)
+      notificationManager.createNotificationChannel(this)
+    }
+    if (!notificationManager.isNotificationChannelEnabled(channelId)){
+      val appName = context.getString(R.string.app_name)
+      val message = context.getString(R.string.please_enable_notifications_for, appName)
+      context.showToast(message)
+      return
+    }
+    val shareId = artwork.token!!.toIntOrNull() ?: 9999
+    val i = shareIntent(context, artwork)
+    val pendingIntent = PendingIntent.getActivity(context, shareId, i, PendingIntent.FLAG_UPDATE_CURRENT)
+    notificationManager.cancel(shareId)
+    with(NotificationCompat.Builder(context, channel.id)) {
+      setSmallIcon(R.drawable.ic_notification)
+      setLargeIcon(MuzeiContract.Artwork.getCurrentArtworkBitmap(context))
+      setContentTitle(artwork.token!!)
+      setContentText(context.getString(R.string.tap_to_share))
+      setContentIntent(pendingIntent)
+      setAutoCancel(true)
+      notificationManager.notify(shareId, build())
+    }
+  }
+
+  private fun shareLegacy(context: Context, artwork: Artwork){
+    context.startActivity(shareIntent(context, artwork))
+  }
+
+  private fun shareIntent(context: Context, artwork: Artwork): Intent {
     val token = artwork.token!!
     val i = Intent()
     i.action = Intent.ACTION_SEND
-
     i.putExtra(Intent.EXTRA_TEXT, BASE_URL + token.toLong())
     i.type = "text/plain"
-    context.startActivity(Intent.createChooser(i, context.getString(R.string.action_share))
-        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    return Intent.createChooser(i, context.getString(R.string.action_share))
+        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
   }
 
   fun saveImage(provider: ArchillectArtProvider, artwork: Artwork) {

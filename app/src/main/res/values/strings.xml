@@ -1,6 +1,10 @@
 <resources>
   <string name="app_name">Muzeillect</string>
 
+  <string name="share_channel_id">share_channel</string>
+  <string name="share_channel_name">Share Artwork</string>
+  <string name="share_channel_desc">Used for the share action alert</string>
+
   <string name="source_label">@string/app_name</string>
   <string name="source_desc">Images from Archillect</string>
 
@@ -23,4 +27,6 @@
   <string name="message_save_error">Saving Error</string>
   <string name="message_permission_grant_first">Permission needs to be granted first</string>
 
+  <string name="please_enable_notifications_for">Please enable notifications for %s</string>
+  <string name="tap_to_share">Tap to share artwork</string>
 </resources>

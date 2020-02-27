@@ -2,17 +2,21 @@
 
 package com.steven.muzeillect
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.muddzdev.styleabletoast.StyleableToast
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
+
 
 val okHttpClient: OkHttpClient by lazy {
   OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
@@ -20,7 +24,7 @@ val okHttpClient: OkHttpClient by lazy {
 
 const val MUZEI_PACKAGE_NAME = "net.nurik.roman.muzei"
 
-const val BASE_URL = "http://archillect.com/"
+const val BASE_URL = "https://archillect.com/"
 
 const val KEY_PERMISSION = "permission"
 
@@ -36,6 +40,18 @@ fun Context.showToast(message: String) {
     Handler(Looper.getMainLooper()).post {
       buildStyledToast(this, message)
     }
+  }
+}
+
+fun NotificationManagerCompat.isNotificationChannelEnabled(channelId: String): Boolean {
+  if (channelId.isBlank()) throw RuntimeException("Notification id is empty")
+  val isEnabled = areNotificationsEnabled()
+  if (!isEnabled) return false
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    val channel = getNotificationChannel(channelId)
+    return channel!!.importance != NotificationManager.IMPORTANCE_NONE
+  } else {
+    return isEnabled
   }
 }
 

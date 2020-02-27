@@ -12,23 +12,23 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
 import kotlin.math.min
 
-class ArchillectCore(private val context: Context?) {
+class ArchillectCore(private val context: Context) {
 
   private val pref by lazy {
     PreferenceManager.getDefaultSharedPreferences(context)
   }
 
   private val isHDOnly by lazy {
-    pref.getBoolean(context?.getString(R.string.pref_key_hd), false)
+    pref.getBoolean(context.getString(R.string.pref_key_hd), false)
   }
 
   private val blacklist by lazy {
-    pref.getStringSet(context?.getString(R.string.pref_key_blacklist), null) ?: emptySet()
+    pref.getStringSet(context.getString(R.string.pref_key_blacklist), null) ?: emptySet()
   }
 
   private var maxToken: Long = -1
 
-  fun getMaxToken() {
+  fun generateMaxToken() {
     try {
       Timber.i("Generating max Token")
       val req = Request.Builder().url(BASE_URL).build()
