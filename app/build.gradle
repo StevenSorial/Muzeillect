@@ -9,8 +9,8 @@ android {
     applicationId "com.steven.muzeillect"
     minSdkVersion 21
     targetSdkVersion 29
-    versionCode 9
-    versionName "2.2.1"
+    versionCode 11
+    versionName "2.3"
     vectorDrawables.useSupportLibrary = true
     viewBinding.enabled = true
   }
