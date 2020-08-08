@@ -12,7 +12,7 @@ class ArchillectWorker(private val context: Context, workerParams: WorkerParamet
     val core = ArchillectCore(context)
     core.generateMaxToken()
     val artwork = core.getArtwork() ?: return Result.retry()
-    val provider = ProviderContract.getProviderClient(context, ArchillectArtProvider::class.java)
+    val provider = ProviderContract.getProviderClient<ArchillectArtProvider>(context)
     provider.addArtwork(artwork)
     return Result.success()
   }

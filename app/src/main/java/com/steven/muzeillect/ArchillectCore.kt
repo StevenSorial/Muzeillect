@@ -105,7 +105,6 @@ class ArchillectCore(private val context: Context) {
 
     if (blacklist.contains(newToken.toString())) {
       Timber.i("$newToken is blacklisted")
-      Timber.e(blacklist.toString())
       return getArtwork()
     }
 
@@ -115,14 +114,15 @@ class ArchillectCore(private val context: Context) {
       return getArtwork()
     }
 
-    return Artwork().apply {
-      token = newToken.toString()
-      title = newToken.toString()
-      byline = "Archillect"
-      webUri = (BASE_URL + token!!.toLong()).toUri()
-      metadata = (BASE_URL + token!!.toLong())
-      persistentUri = imgUrl.toUri()
-    }
+    val token = newToken.toString()
+    return Artwork(
+        token = token,
+        title = token,
+        byline = "Archillect",
+        webUri = (BASE_URL + token.toLong()).toUri(),
+        metadata = (BASE_URL + token.toLong()),
+        persistentUri = imgUrl.toUri()
+    )
   }
 
   private fun isImageTypeValid(imgURL: String): Boolean {

@@ -8,8 +8,8 @@
   <string name="source_label">@string/app_name</string>
   <string name="source_desc">Images from Archillect</string>
 
-  <string name="action_save">Save Artwork</string>
-  <string name="action_share">Share Artwork</string>
+  <string name="action_save">Save artwork</string>
+  <string name="action_share">Share artwork</string>
   <string name="action_blacklist">Add to Blacklist</string>
 
   <string name="pref_key_hd">pref_hd</string>
