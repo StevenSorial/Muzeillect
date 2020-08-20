@@ -2,23 +2,17 @@
 
 package com.steven.muzeillect
 
-import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
-import com.muddzdev.styleabletoast.StyleableToast
+import androidx.annotation.StringRes
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
-
-val okHttpClient: OkHttpClient by lazy {
+val okHttpClient by lazy {
   OkHttpClient.Builder().connectTimeout(30, SECONDS).readTimeout(2, MINUTES).build()
 }
 
@@ -26,43 +20,21 @@ const val MUZEI_PACKAGE_NAME = "net.nurik.roman.muzei"
 
 const val BASE_URL = "https://archillect.com/"
 
-const val KEY_PERMISSION = "permission"
+const val KEY_TOKEN = "token"
 
 const val HD_TOLERANCE = 0.93
 
 const val MINIMUM_HD_WIDTH = 720 * HD_TOLERANCE
 const val MINIMUM_HD_HEIGHT = 1280 * HD_TOLERANCE
 
-fun Context.showToast(message: String) {
+fun Context.showToast(@StringRes messageResId: Int, duration: Int) {
   if (Looper.myLooper() == Looper.getMainLooper()) {
-    buildStyledToast(this, message)
+    Toast.makeText(this, getString(messageResId), duration).show()
   } else {
     Handler(Looper.getMainLooper()).post {
-      buildStyledToast(this, message)
+      Toast.makeText(this, getString(messageResId), duration).show()
     }
   }
-}
-
-fun NotificationManagerCompat.isNotificationChannelEnabled(channelId: String): Boolean {
-  if (channelId.isBlank()) throw RuntimeException("Notification id is empty")
-  val isEnabled = areNotificationsEnabled()
-  if (!isEnabled) return false
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-    val channel = getNotificationChannel(channelId)
-    return channel!!.importance != NotificationManager.IMPORTANCE_NONE
-  } else {
-    return isEnabled
-  }
-}
-
-private fun buildStyledToast(context: Context, message: String) {
-  return StyleableToast.Builder(context)
-      .length(Toast.LENGTH_SHORT)
-      .text(message)
-      .textColor(ContextCompat.getColor(context, R.color.colorPrimary))
-      .font(R.font.inconsolata)
-      .backgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
-      .show()
 }
 
 val Uri.extension: String?
@@ -74,11 +46,3 @@ val Uri.extension: String?
     if (extension.isBlank()) return null
     return extension.toLowerCase()
   }
-
-fun Context.isPermissionGranted(permission: String): Boolean {
-  return when (ContextCompat.checkSelfPermission(this, permission)) {
-    PackageManager.PERMISSION_GRANTED -> true
-    PackageManager.PERMISSION_DENIED -> false
-    else -> throw RuntimeException("unknown permission status")
-  }
-}

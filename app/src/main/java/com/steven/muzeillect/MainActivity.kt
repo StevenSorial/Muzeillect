@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity() {
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
     setupActionBarWithNavController(navController, appBarConfiguration)
-    supportActionBar?.elevation = 0f
-    supportActionBar?.setDisplayShowTitleEnabled(false)
+    supportActionBar!!.elevation = 0f
+    supportActionBar!!.setDisplayShowTitleEnabled(false)
   }
 
   override fun onSupportNavigateUp(): Boolean {

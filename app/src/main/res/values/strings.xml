@@ -1,32 +1,20 @@
 <resources>
   <string name="app_name">Muzeillect</string>
 
-  <string name="share_channel_id">share_channel</string>
-  <string name="share_channel_name">Share Artwork</string>
-  <string name="share_channel_desc">Used for the share action alert</string>
-
   <string name="source_label">@string/app_name</string>
   <string name="source_desc">Images from Archillect</string>
 
-  <string name="action_save">Save artwork</string>
   <string name="action_share">Share artwork</string>
-  <string name="action_blacklist">Add to Blacklist</string>
+  <string name="action_blacklist">Blacklist artwork</string>
 
   <string name="pref_key_hd">pref_hd</string>
-  <string name="pref_key_open">pref_open</string>
   <string name="pref_key_blacklist">pref_blacklist</string>
 
   <string name="pref_title_hd">HD Wallpapers Only</string>
-  <string name="pref_title_open">Open Muzei</string>
-  <string name="pref_title_install">Install Muzei</string>
 
-  <string name="pref_desc_open">Select %s in Muzei</string>
-  <string name="pref_desc_install">Install Muzei from Google Play</string>
+  <string name="toast_enable">Select Muzeillect in Muzei</string>
+  <string name="toast_enable_source">Select Muzeillect from the list of Sources in Muzei</string>
+  <string name="toast_muzei_missing_error">You must install Muzei to use this Source</string>
+  <string name="toast_play_store_missing_error">Could not install Muzei from the Google Play Store</string>
 
-  <string name="message_save_complete">Image Saved</string>
-  <string name="message_save_error">Saving Error</string>
-  <string name="message_permission_grant_first">Permission needs to be granted first</string>
-
-  <string name="please_enable_notifications_for">Please enable notifications for %s</string>
-  <string name="tap_to_share">Tap to share artwork</string>
 </resources>

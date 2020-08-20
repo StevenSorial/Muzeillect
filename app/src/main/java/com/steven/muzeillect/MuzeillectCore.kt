@@ -12,19 +12,17 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
 import kotlin.math.min
 
-class ArchillectCore(private val context: Context) {
+class MuzeillectCore(private val context: Context) {
 
   private val pref by lazy {
     PreferenceManager.getDefaultSharedPreferences(context)
   }
 
-  private val isHDOnly by lazy {
-    pref.getBoolean(context.getString(R.string.pref_key_hd), false)
-  }
+  private val isHDOnly: Boolean
+    get() = pref.getBoolean(context.getString(R.string.pref_key_hd), false)
 
-  private val blacklist by lazy {
-    pref.getStringSet(context.getString(R.string.pref_key_blacklist), null) ?: emptySet()
-  }
+  private val blacklist: Set<String>
+    get() = pref.getStringSet(context.getString(R.string.pref_key_blacklist), null) ?: emptySet()
 
   private var maxToken: Long = -1
 
@@ -46,7 +44,7 @@ class ArchillectCore(private val context: Context) {
   }
 
   private fun getImageURL(token: Long): String? {
-    Timber.i("Generating Image Token")
+    Timber.i("Getting Image URL")
     try {
       val req = Request.Builder().url(BASE_URL + token).build()
       val response = okHttpClient.newCall(req).execute()

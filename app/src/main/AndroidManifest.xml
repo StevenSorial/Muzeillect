@@ -1,23 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.steven.muzeillect">
 
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
 
   <application
     android:name="com.steven.muzeillect.MuzeillectApp"
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
-    android:roundIcon="@mipmap/ic_launcher"
     android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher"
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true">
+
+    <activity-alias
+      android:name="com.steven.muzeillect.MuzeillectLauncherActivity"
+      android:targetActivity="com.steven.muzeillect.MuzeillectRedirectActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity
+      android:name="com.steven.muzeillect.MainActivity"
+      android:exported="true" />
+
+    <activity
+      android:name="com.steven.muzeillect.MuzeillectRedirectActivity"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
     <provider
-      android:name="com.steven.muzeillect.ArchillectArtProvider"
+      android:name="com.steven.muzeillect.MuzeillectArtProvider"
       android:authorities="com.steven.muzeillect"
       android:description="@string/source_desc"
       android:exported="true"
@@ -31,26 +46,18 @@
         android:value="com.steven.muzeillect.MainActivity" />
     </provider>
 
-    <activity
-      android:name="com.steven.muzeillect.PermissionRequestActivity"
-      android:excludeFromRecents="true"
-      android:theme="@style/TransparentTheme" />
-
-    <activity
-      android:name="com.steven.muzeillect.MainActivity"
-      android:exported="true">
+    <provider
+      android:name="com.google.android.apps.muzei.api.provider.MuzeiArtDocumentsProvider"
+      android:authorities="com.steven.muzeillect.documents"
+      android:exported="true"
+      android:grantUriPermissions="true"
+      android:permission="android.permission.MANAGE_DOCUMENTS">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
+        <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
       </intent-filter>
-      <intent-filter android:autoVerify="true" tools:targetApi="m">
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="https"
-          android:host="www.archillect.com" />
-      </intent-filter>
-    </activity>
+    </provider>
+
+    <receiver android:name="com.steven.muzeillect.BlackListReceiver" />
   </application>
 
 </manifest>
