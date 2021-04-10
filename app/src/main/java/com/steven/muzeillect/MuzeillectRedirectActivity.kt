@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.MuzeiContract.Sources
 
 class MuzeillectRedirectActivity : ComponentActivity() {
+
+  private val activityLauncher = registerForActivityResult(StartActivityForResult()) { finish() }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -33,16 +36,11 @@ class MuzeillectRedirectActivity : ComponentActivity() {
 
   private fun tryStartIntent(intent: Intent, @StringRes toastResId: Int?): Boolean {
     try {
-      startActivityForResult(intent, 1)
+      activityLauncher.launch(intent)
       toastResId?.let { showToast(it, Toast.LENGTH_LONG) }
       return true
     } catch (e: Exception) {
       return false
     }
-  }
-
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    finish()
   }
 }
