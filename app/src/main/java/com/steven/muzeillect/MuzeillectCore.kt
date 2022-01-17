@@ -33,8 +33,8 @@ class MuzeillectCore(private val context: Context) {
       val response = okHttpClient.newCall(req).execute()
       val docString = response.body?.string()
       response.close()
-      val doc = Jsoup.parse(docString)
-      val element = doc.select("a.post").first().attributes().asList()[1].value
+      val doc = Jsoup.parse(docString!!)
+      val element = doc.select("a.post").first()!!.attributes().asList()[1].value
           .removePrefix("/")
       maxToken = element.toLong()
     } catch (e: Exception) {
@@ -50,9 +50,9 @@ class MuzeillectCore(private val context: Context) {
       val response = okHttpClient.newCall(req).execute()
       val docString = response.body?.string()
       response.close()
-      val doc = Jsoup.parse(docString)
+      val doc = Jsoup.parse(docString!!)
       val img = doc.select("#ii").first()
-      val imgUrl = img.attr("src")
+      val imgUrl = img!!.attr("src")
       Timber.i("Generated Image URL: $imgUrl")
       return imgUrl
     } catch (e: Exception) {
