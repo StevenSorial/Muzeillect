@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity() {
   }
 
   override fun onSupportNavigateUp(): Boolean {
-    if (navController.currentDestination?.id == navController.graph.startDestination) {
-      onBackPressed()
+    if (navController.currentDestination?.id == navController.graph.startDestinationId) {
+      onBackPressedDispatcher.onBackPressed()
       return true
     } else {
       return navController.navigateUp(appBarConfiguration)

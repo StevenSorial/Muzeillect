@@ -16,7 +16,8 @@
 
     <activity-alias
       android:name="com.steven.muzeillect.MuzeillectLauncherActivity"
-      android:targetActivity="com.steven.muzeillect.MuzeillectRedirectActivity">
+      android:targetActivity="com.steven.muzeillect.MuzeillectRedirectActivity"
+      android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />

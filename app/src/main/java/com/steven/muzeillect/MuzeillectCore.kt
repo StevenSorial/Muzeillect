@@ -2,15 +2,15 @@ package com.steven.muzeillect
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import androidx.preference.PreferenceManager
+import android.net.Uri
 import androidx.core.net.toUri
+import androidx.preference.PreferenceManager
 import com.google.android.apps.muzei.api.provider.Artwork
 import okhttp3.Request
+import okhttp3.Response
 import org.jsoup.Jsoup
 import timber.log.Timber
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.max
-import kotlin.math.min
 
 class MuzeillectCore(private val context: Context) {
 
@@ -27,29 +27,31 @@ class MuzeillectCore(private val context: Context) {
   private var maxToken: Long = -1
 
   fun generateMaxToken() {
+    var response: Response? = null
     try {
       Timber.i("Generating max Token")
       val req = Request.Builder().url(BASE_URL).build()
-      val response = okHttpClient.newCall(req).execute()
+      response = okHttpClient.newCall(req).execute()
       val docString = response.body?.string()
-      response.close()
       val doc = Jsoup.parse(docString!!)
       val element = doc.select("a.post").first()!!.attributes().asList()[1].value
-          .removePrefix("/")
+        .removePrefix("/")
       maxToken = element.toLong()
     } catch (e: Exception) {
       Timber.e(e, "Error getting max Token")
       maxToken = -1
+    } finally {
+      response?.close()
     }
   }
 
-  private fun getImageURL(token: Long): String? {
+  private fun getImageURL(tokenUrl: String): String? {
     Timber.i("Getting Image URL")
+    var response: Response? = null
     try {
-      val req = Request.Builder().url(BASE_URL + token).build()
-      val response = okHttpClient.newCall(req).execute()
+      val req = Request.Builder().url(tokenUrl).build()
+      response = okHttpClient.newCall(req).execute()
       val docString = response.body?.string()
-      response.close()
       val doc = Jsoup.parse(docString!!)
       val img = doc.select("#ii").first()
       val imgUrl = img!!.attr("src")
@@ -58,73 +60,80 @@ class MuzeillectCore(private val context: Context) {
     } catch (e: Exception) {
       Timber.e(e, "Error generating Image URL")
       return null
+    } finally {
+      response?.close()
     }
   }
 
-  private fun isImageValid(URLString: String): Boolean {
-    Timber.i("Validating Image")
-    if (!isImageTypeValid(URLString)) {
-      Timber.i("Invalid Format")
-      return false
-    }
+  private fun validateImageUrl(URLString: String): Uri? {
+    Timber.i("Validating Image url")
+    var response: Response? = null
     try {
       val req = Request.Builder().url(URLString).build()
-      val response = okHttpClient.newCall(req).execute()
-      val responseCode = response.code
-      Timber.i("Response code $responseCode")
-      if (responseCode != 200) return false
-      if (!isHDOnly) return true
+      response = okHttpClient.newCall(req).execute()
+      val finalUrl = response.request.url.toString().toUri()
+      if (response.code != 200) {
+        Timber.i("Response code ${response.code}")
+        return null
+      }
+      if (!isImageTypeValid(finalUrl)) {
+        Timber.i("Invalid Format")
+        return null
+      }
+      if (finalUrl.toString().contains("media_violation")) {
+        Timber.i("Tumblr invalid url: $finalUrl")
+        return null
+      }
+      if (!isHDOnly) return finalUrl
       Timber.i("Checking Image Size")
       val bitmap = BitmapFactory.decodeStream(response.body?.byteStream())
-      response.close()
       if (bitmap == null) {
         Timber.e("Decoding Image Failed")
-        return false
+        return null
       }
-      val h = max(bitmap.height, bitmap.width)
-      val w = min(bitmap.height, bitmap.width)
-      Timber.d("Image Resolution: $w x $h")
-      if (h < MINIMUM_HD_HEIGHT || w < MINIMUM_HD_WIDTH) {
+      val h = bitmap.height
+      val w = bitmap.width
+      Timber.d("Image height: $h, width: $w")
+      if (h * w < MINIMUM_HD_PIXELS) {
         Timber.i("Resolution is low")
-        return false
+        return null
       }
+      return finalUrl
     } catch (e: Exception) {
-      Timber.e(e, "Error Checking Image Size")
-      return false
+      Timber.e(e, "Error validating image url")
+      return null
+    } finally {
+      response?.close()
     }
-    return true
   }
 
   fun getArtwork(): Artwork? {
     if (maxToken <= 0) return null
-    val newToken = ThreadLocalRandom.current().nextLong(maxToken) + 1
-
+    val newToken = (ThreadLocalRandom.current().nextLong(maxToken) + 1).toString()
+    val tokenUrl = BASE_URL + newToken
     Timber.i("Generated Image Token: $newToken")
 
-    if (blacklist.contains(newToken.toString())) {
+    if (blacklist.contains(newToken)) {
       Timber.i("$newToken is blacklisted")
       return getArtwork()
     }
 
-    val imgUrl = getImageURL(newToken) ?: return null
+    val imgUrl = getImageURL(tokenUrl) ?: return null
+    val finalUrl = validateImageUrl(imgUrl) ?: return getArtwork()
+    Timber.i("final url is $finalUrl")
 
-    if (!isImageValid(imgUrl)) {
-      return getArtwork()
-    }
-
-    val token = newToken.toString()
     return Artwork(
-        token = token,
-        title = token,
-        byline = "Archillect",
-        webUri = (BASE_URL + token.toLong()).toUri(),
-        metadata = (BASE_URL + token.toLong()),
-        persistentUri = imgUrl.toUri()
+      token = newToken,
+      title = newToken,
+      byline = "Archillect",
+      webUri = tokenUrl.toUri(),
+      metadata = tokenUrl,
+      persistentUri = finalUrl
     )
   }
 
-  private fun isImageTypeValid(imgURL: String): Boolean {
-    return when (imgURL.toUri().extension) {
+  private fun isImageTypeValid(imgURL: Uri): Boolean {
+    return when (imgURL.extension?.lowercase()) {
       "jpg", "jpeg", "png" -> true
       else -> false
     }
