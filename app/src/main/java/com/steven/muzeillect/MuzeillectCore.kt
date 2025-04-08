@@ -65,11 +65,11 @@ class MuzeillectCore(private val context: Context) {
     }
   }
 
-  private fun validateImageUrl(URLString: String): Uri? {
+  private fun validateImageUrl(urlString: String): Uri? {
     Timber.i("Validating Image url")
     var response: Response? = null
     try {
-      val req = Request.Builder().url(URLString).build()
+      val req = Request.Builder().url(urlString).build()
       response = okHttpClient.newCall(req).execute()
       val finalUrl = response.request.url.toString().toUri()
       if (response.code != 200) {

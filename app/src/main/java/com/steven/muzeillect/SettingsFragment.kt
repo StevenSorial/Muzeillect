@@ -1,12 +1,12 @@
 package com.steven.muzeillect
 
 import android.os.Bundle
+import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.takisoft.preferencex.PreferenceFragmentCompat
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-  override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
+  override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
     setPreferencesFromResource(R.xml.preferences, rootKey)
   }
 

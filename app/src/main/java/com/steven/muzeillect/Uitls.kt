@@ -2,12 +2,13 @@
 
 package com.steven.muzeillect
 
-import android.content.Context
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.core.app.ComponentActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit.*
 
@@ -26,13 +27,9 @@ const val KEY_TOKEN = "token"
 
 const val MINIMUM_HD_PIXELS = 720 * 1280 * 0.97
 
-fun Context.showToast(@StringRes messageResId: Int, duration: Int) {
-  if (Looper.myLooper() == Looper.getMainLooper()) {
-    Toast.makeText(this, getString(messageResId), duration).show()
-  } else {
-    Handler(Looper.getMainLooper()).post {
-      Toast.makeText(this, getString(messageResId), duration).show()
-    }
+fun ComponentActivity.showToast(@StringRes messageResId: Int) {
+  lifecycleScope.launch(Dispatchers.Main) {
+    Toast.makeText(this@showToast, getText(messageResId), Toast.LENGTH_LONG).show()
   }
 }
 

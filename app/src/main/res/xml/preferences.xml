@@ -3,7 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <com.takisoft.preferencex.SwitchPreferenceCompat
+  <androidx.preference.SwitchPreferenceCompat
     android:defaultValue="false"
     android:key="@string/pref_key_hd"
     android:title="@string/pref_title_hd"

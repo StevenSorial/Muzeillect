@@ -2,7 +2,6 @@ package com.steven.muzeillect
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
@@ -30,14 +29,14 @@ class MuzeillectRedirectActivity : ComponentActivity() {
     if (tryStartIntent(playStoreIntent, R.string.toast_muzei_missing_error)) {
       return
     }
-    showToast(R.string.toast_play_store_missing_error, Toast.LENGTH_LONG)
+    showToast(R.string.toast_play_store_missing_error)
     finish()
   }
 
   private fun tryStartIntent(intent: Intent, @StringRes toastResId: Int?): Boolean {
     try {
       activityLauncher.launch(intent)
-      toastResId?.let { showToast(it, Toast.LENGTH_LONG) }
+      toastResId?.let { showToast(it) }
       return true
     } catch (e: Exception) {
       return false
