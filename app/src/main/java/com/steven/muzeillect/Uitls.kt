@@ -2,15 +2,22 @@
 
 package com.steven.muzeillect
 
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.app.ComponentActivity
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit.*
+
+val Context.settingsDataStore by preferencesDataStore(name = "settings")
+val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
 val okHttpClient by lazy {
   OkHttpClient.Builder()

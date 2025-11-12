@@ -11,8 +11,9 @@
   </style>
 
   <style name="AppTheme" parent="BaseAppTheme">
+    <item name="android:windowLightStatusBar">@bool/light_status_bar</item>
     <item name="android:navigationBarColor">@color/colorAccent</item>
-    <item name="colorPrimaryDark">@color/colorAccent</item>
+    <item name="colorPrimaryDark">@color/colorPrimary</item>
   </style>
 
 </resources>

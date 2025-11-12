@@ -1,14 +1,14 @@
 package com.steven.muzeillect
 
 import android.content.Context
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.android.apps.muzei.api.provider.ProviderContract
 
 class MuzeillectWorker(private val context: Context, workerParams: WorkerParameters) :
-  Worker(context, workerParams) {
+  CoroutineWorker(context, workerParams) {
 
-  override fun doWork(): Result {
+  override suspend fun doWork(): Result {
     val core = MuzeillectCore(context)
     core.generateMaxToken()
     val artwork = core.getArtwork() ?: return Result.retry()
@@ -35,7 +35,11 @@ class MuzeillectWorker(private val context: Context, workerParams: WorkerParamet
     cursorForIds.close()
     val remainingTokens = idArray.drop(100)
     remainingTokens.forEach {
-      contentResolver.delete(provider.contentUri,"${ProviderContract.Artwork.TOKEN}=?", arrayOf(it))
+      contentResolver.delete(
+        provider.contentUri,
+        "${ProviderContract.Artwork.TOKEN}=?",
+        arrayOf(it)
+      )
     }
   }
 }
