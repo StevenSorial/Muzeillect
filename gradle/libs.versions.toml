@@ -1,0 +1,49 @@
+[versions]
+activityCompose = "1.11.0"
+agp = "8.13.1"
+appcompat = "1.7.1"
+coil = "3.3.0"
+datastorePreferences = "1.1.7"
+jsoup = "1.21.2"
+kotlin = "2.2.21"
+leakcanary = "2.14"
+material = "1.13.0"
+material3 = "1.4.0"
+materialIcons= "1.7.8"
+muzeiApi = "3.4.2"
+navigation = "2.9.6"
+okhttp = "5.3.1"
+preference = "1.2.1"
+timber = "5.0.1"
+compose = "1.9.4"
+workRuntime = "2.11.0"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIcons" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+androidx-compose = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+androidx-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "compose" }
+androidx-compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
+androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntime" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
+material-material = { module = "com.google.android.material:material", version.ref = "material" }
+muzei-api = { group = "com.google.android.apps.muzei", name = "muzei-api", version.ref = "muzeiApi" }
+okhttp-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-coroutines = { group = "com.squareup.okhttp3", name = "okhttp-coroutines", version.ref = "okhttp" }
+okhttp-tls = { group = "com.squareup.okhttp3", name = "okhttp-tls", version.ref = "okhttp" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+

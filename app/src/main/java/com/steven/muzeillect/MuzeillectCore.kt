@@ -1,122 +1,87 @@
 package com.steven.muzeillect
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.net.toUri
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.google.android.apps.muzei.api.provider.Artwork
+import com.steven.muzeillect.utils.ImageQuality
+import com.steven.muzeillect.utils.PrefsKey
+import com.steven.muzeillect.utils.extension
+import com.steven.muzeillect.utils.settingsDataStore
+import com.steven.muzeillect.utils.tokenUrlForToken
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.coroutines.executeAsync
-import org.jsoup.Jsoup
 import timber.log.Timber
 import java.util.concurrent.ThreadLocalRandom
 
-class MuzeillectCore(private val context: Context) {
+class MuzeillectCore(context: Context) {
 
-  private val isHDOnlyFlow = run {
-    val key = booleanPreferencesKey(context.getString(R.string.pref_key_hd))
-    context.settingsDataStore.data.map { prefs -> prefs[key] ?: false }
-  }
+  private val selectedQualityFlow =
+    context.settingsDataStore.data.map { PrefsKey.SelectedQuality.getFrom(it) }
 
-  private val blacklistFlow = run {
-    val key =
-      stringSetPreferencesKey(context.getString(R.string.pref_key_blacklist))
-    context.settingsDataStore.data.map { prefs -> prefs[key] ?: emptySet() }
-  }
+  private val blacklistFlow =
+    context.settingsDataStore.data.map { PrefsKey.DenyList.getFrom(it) }
 
   private var maxToken: Long = -1
 
   suspend fun generateMaxToken() {
-    var response: Response? = null
     try {
       Timber.i("Generating max Token")
-      val req = Request.Builder().url(BASE_URL).build()
-      response = okHttpClient.newCall(req).executeAsync()
-      val docString = response.body.string()
-      val doc = Jsoup.parse(docString)
-      val element = doc.select("a.post").first()!!.attributes().asList()[1].value
-        .removePrefix("/")
-      maxToken = element.toLong()
+      maxToken = NetworkClient.getMaxToken()
     } catch (e: Exception) {
       Timber.e(e, "Error getting max Token")
       maxToken = -1
-    } finally {
-      response?.close()
     }
   }
 
-  private suspend fun getImageURL(tokenUrl: String): String? {
-    Timber.i("Getting Image URL")
-    var response: Response? = null
+  private suspend fun getImageURL(tokenUrl: Uri): Uri? {
     try {
-      val req = Request.Builder().url(tokenUrl).build()
-      response = okHttpClient.newCall(req).executeAsync()
-      val doc = Jsoup.parse(response.body.string())
-      val img = doc.select("#ii").first()
-      val imgUrl = img!!.attr("src")
+      Timber.i("Getting Image URL")
+      val imgUrl = NetworkClient.getImageUrl(tokenUrl)
       Timber.i("Generated Image URL: $imgUrl")
       return imgUrl
     } catch (e: Exception) {
       Timber.e(e, "Error generating Image URL")
       return null
-    } finally {
-      response?.close()
     }
   }
 
-  private suspend fun validateImageUrl(urlString: String): Uri? {
+  private suspend fun validateImageUrl(url: Uri): Uri? {
     Timber.i("Validating Image url")
-    var response: Response? = null
-    try {
-      val req = Request.Builder().url(urlString).build()
-      response = okHttpClient.newCall(req).executeAsync()
+
+    return NetworkClient.getImageData(url) { response ->
       val finalUrl = response.request.url.toString().toUri()
       if (response.code != 200) {
         Timber.i("Response code ${response.code}")
-        return null
+        return@getImageData null
       }
       if (!isImageTypeValid(finalUrl)) {
         Timber.i("Invalid Format")
-        return null
+        return@getImageData null
       }
       if (finalUrl.toString().contains("media_violation")) {
         Timber.i("Tumblr invalid url: $finalUrl")
-        return null
+        return@getImageData null
       }
 
-      val isHDOnly = isHDOnlyFlow.first()
-      if (!isHDOnly) return finalUrl
+      val selectedQuality = selectedQualityFlow.first()
+      if (selectedQuality == ImageQuality.ANY) return@getImageData finalUrl
       Timber.i("Checking Image Size")
-      val bitmap = BitmapFactory.decodeStream(response.body.byteStream())
-      if (bitmap == null) {
-        Timber.e("Decoding Image Failed")
-        return null
-      }
-      val h = bitmap.height
-      val w = bitmap.width
-      Timber.d("Image height: $h, width: $w")
-      if (h * w < MINIMUM_HD_PIXELS) {
+      val bitmap: Bitmap? = BitmapFactory.decodeStream(response.body.byteStream())
+      if (bitmap == null || !selectedQuality.validateBitmap(bitmap)) {
         Timber.i("Resolution is low")
-        return null
+        return@getImageData null
       }
-      return finalUrl
-    } catch (e: Exception) {
-      Timber.e(e, "Error validating image url")
-      return null
-    } finally {
-      response?.close()
+      return@getImageData finalUrl
     }
   }
 
   suspend fun getArtwork(): Artwork? {
     if (maxToken <= 0) return null
     val newToken = (ThreadLocalRandom.current().nextLong(maxToken) + 1).toString()
-    val tokenUrl = BASE_URL + newToken
+    val tokenUrl = tokenUrlForToken(newToken)
     Timber.i("Generated Image Token: $newToken")
 
     val blacklist = blacklistFlow.first()
@@ -133,8 +98,8 @@ class MuzeillectCore(private val context: Context) {
       token = newToken,
       title = newToken,
       byline = "Archillect",
-      webUri = tokenUrl.toUri(),
-      metadata = tokenUrl,
+      webUri = tokenUrl,
+      metadata = tokenUrl.toString(),
       persistentUri = finalUrl
     )
   }

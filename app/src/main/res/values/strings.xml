@@ -4,13 +4,12 @@
   <string name="source_label">@string/app_name</string>
   <string name="source_desc">Images from Archillect</string>
 
-  <string name="action_share">Share artwork</string>
-  <string name="action_blacklist">Add to denylist</string>
+  <string name="action_share">Share Artwork</string>
+  <string name="action_blacklist">Add to Denylist</string>
 
-  <string name="pref_key_hd">pref_hd</string>
-  <string name="pref_key_blacklist">pref_blacklist</string>
-
-  <string name="pref_title_hd">HD Wallpapers Only</string>
+  <string name="pref_quality_any">Any</string>
+  <string name="pref_quality_hd">HD</string>
+  <string name="pref_quality_full_hd">Full HD</string>
 
   <string name="toast_enable">Select Muzeillect in Muzei</string>
   <string name="toast_enable_source">Select Muzeillect from the list of Sources in Muzei</string>

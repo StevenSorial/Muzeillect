@@ -16,7 +16,11 @@ import timber.log.Timber
 import java.io.InputStream
 import android.app.PendingIntent.*
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.steven.muzeillect.utils.KEY_TOKEN
+import com.steven.muzeillect.utils.PrefsKey
+import com.steven.muzeillect.utils.appScope
+import com.steven.muzeillect.utils.settingsDataStore
+import com.steven.muzeillect.utils.tokenUrlForToken
 import kotlinx.coroutines.launch
 
 class MuzeillectArtProvider : MuzeiArtProvider() {
@@ -46,7 +50,7 @@ class MuzeillectArtProvider : MuzeiArtProvider() {
     val token = artwork.token ?: return null
     val sendIntent = Intent().apply {
       action = Intent.ACTION_SEND
-      putExtra(Intent.EXTRA_TEXT, BASE_URL + token.toLong())
+      putExtra(Intent.EXTRA_TEXT, tokenUrlForToken(token).toString())
       type = "text/plain"
     }
     val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.action_share))
@@ -87,10 +91,10 @@ class BlackListReceiver : BroadcastReceiver() {
     val provider = ProviderContract.getProviderClient<MuzeillectArtProvider>(context)
 
     appScope.launch {
-      context.settingsDataStore.edit { preferences ->
-        val prefKey = stringSetPreferencesKey(context.getString(R.string.pref_key_blacklist))
-        val currentSet = preferences[prefKey] ?: emptySet()
-        preferences[prefKey] = currentSet + token
+      context.settingsDataStore.edit {
+        val prefKey = PrefsKey.DenyList
+        val currentSet = prefKey.getFrom(it)
+        prefKey.setIn(it, currentSet + token)
       }
 
       context.contentResolver?.apply {

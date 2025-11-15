@@ -1,19 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-  <style name="BaseAppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-    <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="colorAccent">@color/colorAccent</item>
-    <item name="fontFamily">@font/inconsolata</item>
-    <item name="android:textColor">@color/colorAccent</item>
-    <item name="android:textColorPrimary">@color/colorAccent</item>
-    <item name="android:textColorSecondary">@color/colorAccent</item>
-    <item name="android:windowBackground">@color/colorPrimary</item>
-  </style>
-
-  <style name="AppTheme" parent="BaseAppTheme">
-    <item name="android:windowLightStatusBar">@bool/light_status_bar</item>
-    <item name="android:navigationBarColor">@color/colorAccent</item>
-    <item name="colorPrimaryDark">@color/colorPrimary</item>
-  </style>
-
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>

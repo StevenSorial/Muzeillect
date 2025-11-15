@@ -7,6 +7,8 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.MuzeiContract.Sources
+import com.steven.muzeillect.utils.MUZEI_PACKAGE_NAME
+import com.steven.muzeillect.utils.showToast
 
 class MuzeillectRedirectActivity : ComponentActivity() {
 
@@ -25,7 +27,7 @@ class MuzeillectRedirectActivity : ComponentActivity() {
     if (launchIntent != null && tryStartIntent(launchIntent, enableSourceMessage)) {
       return
     }
-    val playStoreIntent = Intent(Intent.ACTION_VIEW).setData("https://play.google.com/store/apps/details?id=$MUZEI_PACKAGE_NAME".toUri())
+    val playStoreIntent = Intent(Intent.ACTION_VIEW).setData("https://play.google.com/store/apps/details?id=${MUZEI_PACKAGE_NAME}".toUri())
     if (tryStartIntent(playStoreIntent, R.string.toast_muzei_missing_error)) {
       return
     }

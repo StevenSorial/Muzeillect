@@ -1,97 +1,45 @@
 package com.steven.muzeillect
 
+import com.steven.muzeillect.screens.denylist.DenyListScreen
+import com.steven.muzeillect.screens.LocalNavController
 import android.os.Bundle
-import androidx.compose.foundation.layout.padding
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.*
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.navigation.compose.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.ui.Modifier
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavController
+import com.steven.muzeillect.theme.AppTheme
+import com.steven.muzeillect.screens.Routes
+import com.steven.muzeillect.screens.settings.SettingsScreen
 
-class MainActivity : FragmentActivity() {
-
+class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     setContent {
-      MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
-      ) {
-        AppScaffold()
+      AppTheme {
+        MyNavHost()
       }
     }
   }
 }
 
 @Composable
-fun AppScaffold() {
+private fun MyNavHost() {
   val navController = rememberNavController()
 
-  Scaffold(
-    topBar = { AppBar(navController) }
-  ) { padding ->
+  CompositionLocalProvider(LocalNavController provides navController) {
     NavHost(
       navController = navController,
-      startDestination = "settings_container",
-      modifier = Modifier.padding(padding)
+      startDestination = Routes.Settings.routeName,
     ) {
-      composable("settings_container") {
-        SettingsContainerScreen()
+      composable(Routes.Settings.routeName) {
+        SettingsScreen()
+      }
+      composable(Routes.DenyList.routeName) {
+        DenyListScreen()
       }
     }
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppBar(navController: NavController) {
-  val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-  val isLaunchedExternally = isLaunchedExternally()
-
-  val canNavigateBack = navController.previousBackStackEntry != null
-
-  TopAppBar(
-    title = { },
-    navigationIcon = {
-      if (isLaunchedExternally || canNavigateBack) {
-        IconButton(
-          onClick = {
-            if (canNavigateBack) {
-              navController.navigateUp()
-            } else {
-              backDispatcher?.onBackPressed()
-            }
-          }
-        ) {
-          Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-        }
-      }
-    },
-    colors = TopAppBarDefaults.topAppBarColors(
-      containerColor = MaterialTheme.colorScheme.background,
-      titleContentColor = MaterialTheme.colorScheme.onBackground
-    )
-  )
-}
-
-@Composable
-private fun isLaunchedExternally(): Boolean {
-  val activity = LocalActivity.current
-  val intent = activity?.intent
-  val callingPkg = activity?.callingActivity?.packageName
-  val targetPkg = intent?.`package`
-
-  return remember {
-    if (callingPkg != null && callingPkg != activity.packageName) {
-      true
-    } else if (targetPkg != null && targetPkg != activity.packageName) {
-      true
-    } else {
-      false
-    }
-  }
-}
