@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="source_desc">Bilder aus Archillect</string>
+
+  <string name="back">Zurück</string>
+
+  <string name="action_share">Bild teilen</string>
+  <string name="action_block">Bild blockieren</string>
+
+  <string name="action_blocked_images">Blockierte Bilder</string>
+  <string name="action_blocked_image_unblock">Aus Blockliste entfernen</string>
+
+  <string name="pref_quality_menu_title">Bildqualität</string>
+  <string name="pref_quality_dialog_title">Bildqualität auswählen</string>
+  <string name="pref_quality_any">Beliebig</string>
+  <string name="pref_quality_hd">HD</string>
+  <string name="pref_quality_full_hd">Full HD</string>
+
+  <string name="toast_enable">Wähle Muzeillect in Muzei aus</string>
+  <string name="toast_enable_source">Wähle Muzeillect in Muzei aus der Liste der Quellen aus</string>
+  <string name="toast_muzei_missing_error">Du musst Muzei installieren, um diese Quelle zu verwenden</string>
+  <string name="toast_play_store_missing_error">Muzei konnte nicht aus dem Google Play Store installiert werden</string>
+</resources>

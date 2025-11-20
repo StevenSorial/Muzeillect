@@ -1,12 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Muzeillect</string>
-
-  <string name="source_label">@string/app_name</string>
+  <string name="app_name" translatable="false">Muzeillect</string>
   <string name="source_desc">Images from Archillect</string>
 
-  <string name="action_share">Share Artwork</string>
-  <string name="action_blacklist">Add to Denylist</string>
+  <string name="back">Back</string>
 
+  <string name="action_share">Share Image</string>
+  <string name="action_block">Block Image</string>
+
+  <string name="action_blocked_images">Blocked Images</string>
+  <string name="action_blocked_image_unblock">Remove from blocklist</string>
+
+  <string name="pref_quality_menu_title">Image quality</string>
+  <string name="pref_quality_dialog_title">Select Image Quality</string>
   <string name="pref_quality_any">Any</string>
   <string name="pref_quality_hd">HD</string>
   <string name="pref_quality_full_hd">Full HD</string>
@@ -15,5 +21,4 @@
   <string name="toast_enable_source">Select Muzeillect from the list of Sources in Muzei</string>
   <string name="toast_muzei_missing_error">You must install Muzei to use this Source</string>
   <string name="toast_play_store_missing_error">Could not install Muzei from the Google Play Store</string>
-
 </resources>

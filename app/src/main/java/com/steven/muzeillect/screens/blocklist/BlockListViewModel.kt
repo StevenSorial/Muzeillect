@@ -1,4 +1,4 @@
-package com.steven.muzeillect.screens.denylist
+package com.steven.muzeillect.screens.blocklist
 
 import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
@@ -24,17 +24,17 @@ import kotlin.collections.indexOfFirst
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
 
-class DenyListViewModel(
+class BlockListViewModel(
   private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
-  private val _uiState = MutableStateFlow(DenyListState())
-  val uiState: StateFlow<DenyListState> = _uiState.asStateFlow()
+  private val _uiState = MutableStateFlow(BlockListState())
+  val uiState: StateFlow<BlockListState> = _uiState.asStateFlow()
   private var loadJob: Job? = null
 
   fun startsListening() {
     viewModelScope.launch {
       dataStore.data.collect { prefs ->
-        handlePrefs(PrefsKey.DenyList.getFrom(prefs))
+        handlePrefs(PrefsKey.BlockList.getFrom(prefs))
       }
     }
   }
@@ -43,7 +43,7 @@ class DenyListViewModel(
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isRefreshing = true)
       delay(0.5.seconds)
-      val currentList = dataStore.data.map { PrefsKey.DenyList.getFrom(it) }.first()
+      val currentList = dataStore.data.map { PrefsKey.BlockList.getFrom(it) }.first()
       handlePrefs(currentList)
       _uiState.value = _uiState.value.copy(isRefreshing = false)
     }
@@ -59,17 +59,17 @@ class DenyListViewModel(
   }
 
   private suspend fun handlePrefsImpl(currentSet: Set<String>) {
-    val newDenySet = currentSet.toMutableSet()
+    val newBlockSet = currentSet.toMutableSet()
 
     for (token in currentSet) {
 
       val currentList = _uiState.value.items.toMutableList()
       var currentIndex = currentList.indexOfFirstOrNull(token)
 
-      if (currentIndex != null && currentList[currentIndex] !is DenyListItemState.Error) continue
+      if (currentIndex != null && currentList[currentIndex] !is BlockListItemState.Error) continue
 
       currentIndex = currentIndex ?: currentList.size
-      currentList.appendOrReplace(currentIndex, DenyListItemState.Loading(token))
+      currentList.appendOrReplace(currentIndex, BlockListItemState.Loading(token))
       _uiState.value = _uiState.value.copy(items = currentList.toList())
       try {
         val url = NetworkClient.getImageUrl(tokenUrlForToken(token))
@@ -77,10 +77,10 @@ class DenyListViewModel(
           response.request.url.toString().toUri()
         }
         if (finalUrl.toString().contains("media_violation")) {
-          newDenySet.remove(token)
+          newBlockSet.remove(token)
           currentList.removeAt(currentIndex)
         } else {
-          currentList.appendOrReplace(currentIndex, DenyListItemState.Success(token, finalUrl))
+          currentList.appendOrReplace(currentIndex, BlockListItemState.Success(token, finalUrl))
         }
         _uiState.value = _uiState.value.copy(items = currentList.toList())
       } catch (e: Exception) {
@@ -94,8 +94,8 @@ class DenyListViewModel(
       }
     }
 
-    if (newDenySet != currentSet) {
-      dataStore.edit { PrefsKey.DenyList.setIn(it, newDenySet.toSet()) }
+    if (newBlockSet != currentSet) {
+      dataStore.edit { PrefsKey.BlockList.setIn(it, newBlockSet.toSet()) }
     }
   }
 
@@ -104,10 +104,10 @@ class DenyListViewModel(
       val currentList = _uiState.value.items.toMutableList()
       currentList.removeAt(currentList.indexOfFirstOrNull(token)!!)
       _uiState.value = _uiState.value.copy(items = currentList.toList())
-      val currentSet = dataStore.data.map { PrefsKey.DenyList.getFrom(it) }.first()
-      val newDenyList = currentSet.toMutableSet()
-      newDenyList.remove(token)
-      dataStore.edit { PrefsKey.DenyList.setIn(it, newDenyList) }
+      val currentSet = dataStore.data.map { PrefsKey.BlockList.getFrom(it) }.first()
+      val newBlockList = currentSet.toMutableSet()
+      newBlockList.remove(token)
+      dataStore.edit { PrefsKey.BlockList.setIn(it, newBlockList) }
     }
   }
 
@@ -115,7 +115,7 @@ class DenyListViewModel(
     Timber.e(error, "Error downloading Image")
     val currentList = _uiState.value.items.toMutableList()
     val index = currentList.indexOfFirstOrNull(token) ?: return
-    currentList[index] = DenyListItemState.Error(token)
+    currentList[index] = BlockListItemState.Error(token)
     _uiState.value = _uiState.value.copy(items = currentList.toList())
   }
 }
@@ -128,7 +128,7 @@ private fun <E> MutableList<E>.appendOrReplace(index: Int, element: E) {
   }
 }
 
-private fun List<DenyListItemState>.indexOfFirstOrNull(token: String): Int? {
+private fun List<BlockListItemState>.indexOfFirstOrNull(token: String): Int? {
   val index = indexOfFirst { it.token == token }
   return if (index == -1) null else index
 }

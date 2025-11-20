@@ -25,7 +25,7 @@ sealed class PrefsKey<T : Any, U>(
   private val encoder: (value: U) -> T?,
   private val decoder: (value: T?) -> U,
 ) {
-  object DenyList : PrefsKey<Set<String>, Set<String>>(
+  object BlockList : PrefsKey<Set<String>, Set<String>>(
     rawKey = "pref_blacklist",
     keyGenerator = ::stringSetPreferencesKey,
     encoder = { value -> value },
@@ -35,9 +35,9 @@ sealed class PrefsKey<T : Any, U>(
   object SelectedQuality : PrefsKey<String, ImageQuality>(
     rawKey = "selected_quality",
     keyGenerator = ::stringPreferencesKey,
-    encoder = { value -> value.prefValue() },
+    encoder = { value -> value.prefValue },
     decoder = { value ->
-      ImageQuality.entries.find { it.prefValue() == value }!!
+      ImageQuality.entries.find { it.prefValue == value }!!
     }
   )
 
@@ -68,11 +68,12 @@ sealed class PrefsKey<T : Any, U>(
   }
 }
 
-private fun ImageQuality.prefValue(): String? = when (this) {
-  ImageQuality.ANY -> null
-  ImageQuality.HD -> "hd"
-  ImageQuality.FULL_HD -> "full_hd"
-}
+private val ImageQuality.prefValue: String?
+  get() = when (this) {
+    ImageQuality.ANY -> null
+    ImageQuality.HD -> "hd"
+    ImageQuality.FULL_HD -> "full_hd"
+  }
 
 object PreferenceMigrator {
   suspend fun migrateFromSharedPreferences(context: Context) {

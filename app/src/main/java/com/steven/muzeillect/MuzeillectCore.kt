@@ -16,13 +16,13 @@ import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import java.util.concurrent.ThreadLocalRandom
 
-class MuzeillectCore(context: Context) {
+class MuzeillectCore(private val context: Context) {
 
   private val selectedQualityFlow =
     context.settingsDataStore.data.map { PrefsKey.SelectedQuality.getFrom(it) }
 
   private val blacklistFlow =
-    context.settingsDataStore.data.map { PrefsKey.DenyList.getFrom(it) }
+    context.settingsDataStore.data.map { PrefsKey.BlockList.getFrom(it) }
 
   private var maxToken: Long = -1
 
@@ -97,7 +97,7 @@ class MuzeillectCore(context: Context) {
     return Artwork(
       token = newToken,
       title = newToken,
-      byline = "Archillect",
+      byline = context.getString(R.string.app_name),
       webUri = tokenUrl,
       metadata = tokenUrl.toString(),
       persistentUri = finalUrl

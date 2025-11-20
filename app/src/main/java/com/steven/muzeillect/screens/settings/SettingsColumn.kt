@@ -50,8 +50,8 @@ fun SettingsColumn(modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     ImageQualityPreference()
     NavigationTile(
-      title = "Deny List",
-      onClick = { navController.navigate(Routes.DenyList.routeName) },
+      title = stringResource(R.string.action_blocked_images),
+      onClick = { navController.navigate(Routes.BlockList.routeName) },
     )
   }
 }
@@ -70,7 +70,7 @@ fun ImageQualityPreference() {
   var showDialog by remember { mutableStateOf(false) }
 
   PrefRow(
-    title = "Image quality",
+    title = stringResource(R.string.pref_quality_menu_title),
     subtitle = selected.displayTitle(),
     onClick = { showDialog = true }
   )
@@ -78,7 +78,7 @@ fun ImageQualityPreference() {
   if (showDialog) {
     AlertDialog(
       onDismissRequest = { showDialog = false },
-      title = { Text("Select Image Quality") },
+      title = { Text(stringResource(R.string.pref_quality_dialog_title)) },
       text = {
         Column {
           ImageQuality.entries.forEach { quality ->
@@ -110,7 +110,7 @@ fun ImageQualityPreference() {
       },
       confirmButton = {
         TextButton(onClick = { showDialog = false }) {
-          Text("Cancel")
+          Text(stringResource(android.R.string.cancel))
         }
       }
     )

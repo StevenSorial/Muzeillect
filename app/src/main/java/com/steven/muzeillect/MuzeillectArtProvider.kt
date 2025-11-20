@@ -72,8 +72,8 @@ class MuzeillectArtProvider : MuzeiArtProvider() {
 
     return RemoteActionCompat(
       IconCompat.createWithResource(context, R.drawable.blacklist),
-      context.getString(R.string.action_blacklist),
-      context.getString(R.string.action_blacklist),
+      context.getString(R.string.action_block),
+      context.getString(R.string.action_block),
       getBroadcast(context, token.toInt(), intent, flag)
     ).apply { setShouldShowIcon(false) }
   }
@@ -92,7 +92,7 @@ class BlackListReceiver : BroadcastReceiver() {
 
     appScope.launch {
       context.settingsDataStore.edit {
-        val prefKey = PrefsKey.DenyList
+        val prefKey = PrefsKey.BlockList
         val currentSet = prefKey.getFrom(it)
         prefKey.setIn(it, currentSet + token)
       }

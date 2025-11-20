@@ -17,8 +17,8 @@ android {
     applicationId = "com.steven.muzeillect"
     minSdk = 23
     targetSdk = apiLevel
-    versionCode = 16
-    versionName = "3.0"
+    versionCode = 20
+    versionName = "4.0"
   }
 
   composeOptions {

@@ -9,5 +9,5 @@ val LocalNavController = compositionLocalOf<NavController> {
 
 sealed class Routes(val routeName: String) {
   data object Settings : Routes("settings")
-  data object DenyList : Routes("deny_list")
+  data object BlockList : Routes("block_list")
 }

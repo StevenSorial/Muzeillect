@@ -7,13 +7,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.steven.muzeillect.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
+fun MyAppBar(
   showBackButton: Boolean? = null,
   title: @Composable (() -> Unit) = {},
   onClick: (() -> Unit)? = null
@@ -26,16 +34,28 @@ fun AppBar(
     title = title,
     navigationIcon = {
       if (showBackButton ?: canNavigateBack) {
-        IconButton(
-          onClick = {
-            if (onClick != null) {
-              onClick()
-            } else {
-              navController.navigateUp()
-            }
-          }
+        val description = stringResource(R.string.back)
+        TooltipBox(
+          positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            positioning = TooltipAnchorPosition.Below
+          ),
+          state = rememberTooltipState(),
+          tooltip = { PlainTooltip { Text(description) } },
         ) {
-          Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+          IconButton(
+            onClick = {
+              if (onClick != null) {
+                onClick()
+              } else {
+                navController.navigateUp()
+              }
+            }
+          ) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = description
+            )
+          }
         }
       }
     },

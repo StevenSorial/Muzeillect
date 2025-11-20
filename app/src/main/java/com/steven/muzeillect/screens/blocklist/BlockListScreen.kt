@@ -1,4 +1,4 @@
-package com.steven.muzeillect.screens.denylist
+package com.steven.muzeillect.screens.blocklist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,32 +29,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.steven.muzeillect.NetworkClient
-import com.steven.muzeillect.uiComponents.AppBar
+import com.steven.muzeillect.R
+import com.steven.muzeillect.uiComponents.MyAppBar
 import com.steven.muzeillect.utils.settingsDataStore
 
 @Composable
-fun DenyListScreen(
-  vm: DenyListViewModel = DenyListViewModel(LocalContext.current.settingsDataStore)
+fun BlockListScreen(
+  vm: BlockListViewModel = BlockListViewModel(LocalContext.current.settingsDataStore)
 ) {
 
   val uiState by vm.uiState.collectAsState()
   vm.startsListening()
 
   Scaffold(
-    topBar = { AppBar(title = { Text("Denied List") }) }
+    topBar = {
+      MyAppBar(title = { Text(stringResource(R.string.action_blocked_images)) })
+    }
   ) { padding ->
 
+    @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
     BoxWithConstraints(
       modifier = Modifier
         .padding(padding)
         .consumeWindowInsets(padding)
     ) {
-      val midDim = minOf(maxWidth, maxHeight)
+      val midDim = minOf(this.maxWidth, this.maxHeight)
       val size = maxOf(midDim * 0.4f, 192.dp)
-      val count = (maxWidth / size).toInt().coerceAtLeast(1)
+      val count = (this.maxWidth / size).toInt().coerceAtLeast(1)
 
 
       PullToRefreshBox(
@@ -92,21 +97,21 @@ fun DenyListScreen(
 @Suppress("AssignedValueIsNeverRead")
 @Composable
 fun GridItem(
-  vm: DenyListViewModel,
-  itemState: DenyListItemState
+  vm: BlockListViewModel,
+  itemState: BlockListItemState
 ) {
   var showMenu by remember { mutableStateOf(false) }
 
   when (itemState) {
-    is DenyListItemState.Loading -> LoadingItem()
-    is DenyListItemState.Error -> Box(
+    is BlockListItemState.Loading -> LoadingItem()
+    is BlockListItemState.Error -> Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
     ) {
       Text("⚠\uFE0F")
     }
 
-    is DenyListItemState.Success ->
+    is BlockListItemState.Success ->
       SubcomposeAsyncImage(
         model = itemState.url,
         imageLoader = NetworkClient.imageLoader,
@@ -126,7 +131,7 @@ fun GridItem(
     onDismissRequest = { showMenu = false },
   ) {
     DropdownMenuItem(
-      text = { Text("Remove") },
+      text = { Text(stringResource(R.string.action_blocked_image_unblock)) },
       onClick = {
         showMenu = false
         vm.removeFromList(itemState.token)
@@ -141,10 +146,11 @@ private fun LoadingItem() {
     modifier = Modifier.fillMaxSize(),
     contentAlignment = Alignment.Center
   ) {
-    println("maxWidth: $maxWidth, maxHeight: $maxHeight")
-    val minDim = minOf(maxWidth, maxHeight)
+    println("maxWidth: ${this.maxWidth}, maxHeight: ${this.maxHeight}")
+    val minDim = minOf(this.maxWidth, this.maxHeight)
     val size = minDim * 0.25f
 
+    @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
     CircularProgressIndicator(modifier = Modifier.size(size), strokeWidth = 6.0.dp)
   }
 }

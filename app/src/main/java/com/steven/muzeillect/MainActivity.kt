@@ -1,6 +1,5 @@
 package com.steven.muzeillect
 
-import com.steven.muzeillect.screens.denylist.DenyListScreen
 import com.steven.muzeillect.screens.LocalNavController
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.*
 import com.steven.muzeillect.theme.AppTheme
 import com.steven.muzeillect.screens.Routes
+import com.steven.muzeillect.screens.blocklist.BlockListScreen
 import com.steven.muzeillect.screens.settings.SettingsScreen
 
 class MainActivity : ComponentActivity() {
@@ -36,8 +36,8 @@ private fun MyNavHost() {
       composable(Routes.Settings.routeName) {
         SettingsScreen()
       }
-      composable(Routes.DenyList.routeName) {
-        DenyListScreen()
+      composable(Routes.BlockList.routeName) {
+        BlockListScreen()
       }
     }
   }

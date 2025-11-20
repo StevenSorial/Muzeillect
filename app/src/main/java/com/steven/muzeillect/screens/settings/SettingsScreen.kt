@@ -1,6 +1,5 @@
 package com.steven.muzeillect.screens.settings
 
-import com.steven.muzeillect.uiComponents.AppBar
 import com.steven.muzeillect.screens.LocalNavController
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -20,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import com.steven.muzeillect.R
+import com.steven.muzeillect.uiComponents.MyAppBar
 
 @Composable
 fun SettingsScreen() {
@@ -60,7 +60,7 @@ private fun CustomApBar() {
   val isLaunchedExternally = isLaunchedExternally()
 
   val canNavigateBack = navController.previousBackStackEntry != null
-  AppBar(
+  MyAppBar(
     showBackButton = isLaunchedExternally || canNavigateBack,
     onClick = {
       if (canNavigateBack) {
