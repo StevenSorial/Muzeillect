@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.MuzeiContract.Sources
 import com.steven.muzeillect.utils.MUZEI_PACKAGE_NAME
@@ -16,31 +15,39 @@ class MuzeillectRedirectActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val isProviderSelected = Sources.isProviderSelected(this, "com.steven.muzeillect")
-    val deepLinkIntent = Sources.createChooseProviderIntent("com.steven.muzeillect")
-    val enableMessage = if (isProviderSelected) null else R.string.toast_enable
+    val isProviderSelected = Sources.isProviderSelected(this, BuildConfig.APPLICATION_ID)
+    val deepLinkIntent = Sources.createChooseProviderIntent(BuildConfig.APPLICATION_ID)
+    val enableMessage = if (isProviderSelected) null else getString(
+      R.string.toast_enable,
+      getString(R.string.app_name)
+    )
     if (tryStartIntent(deepLinkIntent, enableMessage)) {
       return
     }
-    val enableSourceMessage = if (isProviderSelected) null else R.string.toast_enable_source
+    val enableSourceMessage =
+      if (isProviderSelected) null else getString(
+        R.string.toast_enable_source,
+        getString(R.string.app_name)
+      )
     val launchIntent = packageManager.getLaunchIntentForPackage(MUZEI_PACKAGE_NAME)
     if (launchIntent != null && tryStartIntent(launchIntent, enableSourceMessage)) {
       return
     }
-    val playStoreIntent = Intent(Intent.ACTION_VIEW).setData("https://play.google.com/store/apps/details?id=${MUZEI_PACKAGE_NAME}".toUri())
-    if (tryStartIntent(playStoreIntent, R.string.toast_muzei_missing_error)) {
+    val playStoreIntent =
+      Intent(Intent.ACTION_VIEW).setData("https://play.google.com/store/apps/details?id=${MUZEI_PACKAGE_NAME}".toUri())
+    if (tryStartIntent(playStoreIntent, getString(R.string.toast_muzei_missing_error))) {
       return
     }
-    showToast(R.string.toast_play_store_missing_error)
+    showToast(getString(R.string.toast_play_store_missing_error))
     finish()
   }
 
-  private fun tryStartIntent(intent: Intent, @StringRes toastResId: Int?): Boolean {
+  private fun tryStartIntent(intent: Intent, message: String?): Boolean {
     try {
       activityLauncher.launch(intent)
-      toastResId?.let { showToast(it) }
+      message?.let { showToast(it) }
       return true
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       return false
     }
   }

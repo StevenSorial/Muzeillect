@@ -57,7 +57,7 @@ class MuzeillectArtProvider : MuzeiArtProvider() {
     val flag = FLAG_IMMUTABLE
 
     return RemoteActionCompat(
-      IconCompat.createWithResource(context, R.drawable.share),
+      IconCompat.createWithResource(context, R.drawable.share_24px),
       context.getString(R.string.action_share),
       context.getString(R.string.action_share),
       getActivity(context, artwork.id.toInt(), shareIntent, flag)
@@ -71,7 +71,7 @@ class MuzeillectArtProvider : MuzeiArtProvider() {
     val flag = FLAG_IMMUTABLE or FLAG_CANCEL_CURRENT
 
     return RemoteActionCompat(
-      IconCompat.createWithResource(context, R.drawable.blacklist),
+      IconCompat.createWithResource(context, R.drawable.block_24px),
       context.getString(R.string.action_block),
       context.getString(R.string.action_block),
       getBroadcast(context, token.toInt(), intent, flag)

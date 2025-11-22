@@ -61,10 +61,10 @@ class BlockListViewModel(
   private suspend fun handlePrefsImpl(currentSet: Set<String>) {
     val newBlockSet = currentSet.toMutableSet()
 
-    for (token in currentSet) {
+    for (token in currentSet.reversed()) {
 
       val currentList = _uiState.value.items.toMutableList()
-      var currentIndex = currentList.indexOfFirstOrNull(token)
+      var currentIndex = currentList.indexOfToken(token)
 
       if (currentIndex != null && currentList[currentIndex] !is BlockListItemState.Error) continue
 
@@ -102,7 +102,7 @@ class BlockListViewModel(
   fun removeFromList(token: String) {
     viewModelScope.launch {
       val currentList = _uiState.value.items.toMutableList()
-      currentList.removeAt(currentList.indexOfFirstOrNull(token)!!)
+      currentList.removeAt(currentList.indexOfToken(token)!!)
       _uiState.value = _uiState.value.copy(items = currentList.toList())
       val currentSet = dataStore.data.map { PrefsKey.BlockList.getFrom(it) }.first()
       val newBlockList = currentSet.toMutableSet()
@@ -114,7 +114,7 @@ class BlockListViewModel(
   fun imageLoadingError(token: String, error: Throwable) {
     Timber.e(error, "Error downloading Image")
     val currentList = _uiState.value.items.toMutableList()
-    val index = currentList.indexOfFirstOrNull(token) ?: return
+    val index = currentList.indexOfToken(token) ?: return
     currentList[index] = BlockListItemState.Error(token)
     _uiState.value = _uiState.value.copy(items = currentList.toList())
   }
@@ -128,7 +128,7 @@ private fun <E> MutableList<E>.appendOrReplace(index: Int, element: E) {
   }
 }
 
-private fun List<BlockListItemState>.indexOfFirstOrNull(token: String): Int? {
+private fun List<BlockListItemState>.indexOfToken(token: String): Int? {
   val index = indexOfFirst { it.token == token }
   return if (index == -1) null else index
 }

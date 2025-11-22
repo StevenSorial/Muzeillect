@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +34,7 @@ import coil3.compose.SubcomposeAsyncImage
 import com.steven.muzeillect.NetworkClient
 import com.steven.muzeillect.R
 import com.steven.muzeillect.uiComponents.MyAppBar
+import com.steven.muzeillect.utils.copyWith
 import com.steven.muzeillect.utils.settingsDataStore
 
 @Composable
@@ -54,23 +54,22 @@ fun BlockListScreen(
     @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
     BoxWithConstraints(
       modifier = Modifier
-        .padding(padding)
-        .consumeWindowInsets(padding)
+        .padding(padding.copyWith(bottom = 0.dp)),
     ) {
       val midDim = minOf(this.maxWidth, this.maxHeight)
-      val size = maxOf(midDim * 0.4f, 192.dp)
+      val size = maxOf(midDim * 0.4f, 180.dp)
       val count = (this.maxWidth / size).toInt().coerceAtLeast(1)
-
 
       PullToRefreshBox(
         isRefreshing = uiState.isRefreshing,
+
         onRefresh = { vm.refresh() },
       ) {
         LazyVerticalGrid(
           columns = GridCells.Fixed(count),
           modifier = Modifier
             .fillMaxSize(),
-          contentPadding = PaddingValues(0.dp),
+          contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
           horizontalArrangement = Arrangement.spacedBy(0.dp),
           verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
@@ -146,7 +145,6 @@ private fun LoadingItem() {
     modifier = Modifier.fillMaxSize(),
     contentAlignment = Alignment.Center
   ) {
-    println("maxWidth: ${this.maxWidth}, maxHeight: ${this.maxHeight}")
     val minDim = minOf(this.maxWidth, this.maxHeight)
     val size = minDim * 0.25f
 

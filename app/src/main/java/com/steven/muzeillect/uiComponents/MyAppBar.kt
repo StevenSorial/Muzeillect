@@ -16,6 +16,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import com.steven.muzeillect.R
 
@@ -35,11 +38,19 @@ fun MyAppBar(
     navigationIcon = {
       if (showBackButton ?: canNavigateBack) {
         val description = stringResource(R.string.back)
+        val hapticFeedback = LocalHapticFeedback.current
+        val tooltipState = rememberTooltipState()
+
+        LaunchedEffect(tooltipState.isVisible) {
+          if (!tooltipState.isVisible) return@LaunchedEffect
+          hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+
         TooltipBox(
           positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
             positioning = TooltipAnchorPosition.Below
           ),
-          state = rememberTooltipState(),
+          state = tooltipState,
           tooltip = { PlainTooltip { Text(description) } },
         ) {
           IconButton(

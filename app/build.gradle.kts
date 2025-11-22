@@ -12,12 +12,13 @@ android {
   val apiLevel = 36
   compileSdkVersion(apiLevel)
   namespace = "com.steven.muzeillect"
+  ndkVersion = "29.0.14206865"
 
   defaultConfig {
     applicationId = "com.steven.muzeillect"
     minSdk = 23
     targetSdk = apiLevel
-    versionCode = 20
+    versionCode = 25
     versionName = "4.0"
   }
 
@@ -39,15 +40,24 @@ android {
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
+      ndk {
+        debugSymbolLevel = "FULL"
+      }
     }
 
     debug {
       isMinifyEnabled = false
       isShrinkResources = false
+      applicationIdSuffix = ".debug"
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
+    }
+
+    all {
+      val completeId = "${defaultConfig.applicationId}${applicationIdSuffix ?: ""}"
+      manifestPlaceholders["appBundle"] = completeId
     }
 
     buildFeatures {

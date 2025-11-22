@@ -14,7 +14,7 @@
     android:usesCleartextTraffic="true">
 
     <activity-alias
-      android:name="com.steven.muzeillect.MuzeillectLauncherActivity"
+      android:name="${appBundle}.MuzeillectLauncherActivity"
       android:targetActivity="com.steven.muzeillect.MuzeillectRedirectActivity"
       android:exported="true">
       <intent-filter>
@@ -33,7 +33,7 @@
 
     <provider
       android:name="com.steven.muzeillect.MuzeillectArtProvider"
-      android:authorities="com.steven.muzeillect"
+      android:authorities="${appBundle}"
       android:description="@string/source_desc"
       android:exported="true"
       android:label="@string/app_name"
@@ -48,7 +48,7 @@
 
     <provider
       android:name="com.google.android.apps.muzei.api.provider.MuzeiArtDocumentsProvider"
-      android:authorities="com.steven.muzeillect.documents"
+      android:authorities="${appBundle}.documents"
       android:exported="true"
       android:grantUriPermissions="true"
       android:permission="android.permission.MANAGE_DOCUMENTS">

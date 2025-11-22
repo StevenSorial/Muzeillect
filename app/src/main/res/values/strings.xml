@@ -17,8 +17,8 @@
   <string name="pref_quality_hd">HD</string>
   <string name="pref_quality_full_hd">Full HD</string>
 
-  <string name="toast_enable">Select Muzeillect in Muzei</string>
-  <string name="toast_enable_source">Select Muzeillect from the list of Sources in Muzei</string>
+  <string name="toast_enable">Select %1$s in Muzei</string>
+  <string name="toast_enable_source">Select %1$s from the list of Sources in Muzei</string>
   <string name="toast_muzei_missing_error">You must install Muzei to use this Source</string>
   <string name="toast_play_store_missing_error">Could not install Muzei from the Google Play Store</string>
 </resources>

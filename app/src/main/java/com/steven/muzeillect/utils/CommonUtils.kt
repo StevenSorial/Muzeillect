@@ -4,7 +4,6 @@ package com.steven.muzeillect.utils
 
 import android.net.Uri
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.core.app.ComponentActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
@@ -25,9 +24,9 @@ fun tokenUrlForToken(token: String): Uri {
 
 const val KEY_TOKEN = "token"
 
-fun ComponentActivity.showToast(@StringRes messageResId: Int) {
+fun ComponentActivity.showToast(message: String) {
   lifecycleScope.launch(Dispatchers.Main) {
-    Toast.makeText(this@showToast, getText(messageResId), Toast.LENGTH_LONG).show()
+    Toast.makeText(this@showToast, message, Toast.LENGTH_LONG).show()
   }
 }
 
