@@ -17,9 +17,10 @@ class MuzeillectRedirectActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     val isProviderSelected = Sources.isProviderSelected(this, BuildConfig.APPLICATION_ID)
     val deepLinkIntent = Sources.createChooseProviderIntent(BuildConfig.APPLICATION_ID)
+    val appName = getString(R.string.app_name)
+
     val enableMessage = if (isProviderSelected) null else getString(
-      R.string.toast_enable,
-      getString(R.string.app_name)
+      R.string.toast_enable, appName
     )
     if (tryStartIntent(deepLinkIntent, enableMessage)) {
       return
@@ -27,7 +28,7 @@ class MuzeillectRedirectActivity : ComponentActivity() {
     val enableSourceMessage =
       if (isProviderSelected) null else getString(
         R.string.toast_enable_source,
-        getString(R.string.app_name)
+        appName
       )
     val launchIntent = packageManager.getLaunchIntentForPackage(MUZEI_PACKAGE_NAME)
     if (launchIntent != null && tryStartIntent(launchIntent, enableSourceMessage)) {

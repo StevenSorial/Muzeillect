@@ -10,7 +10,6 @@ class MuzeillectWorker(private val context: Context, workerParams: WorkerParamet
 
   override suspend fun doWork(): Result {
     val core = MuzeillectCore(context)
-    core.generateMaxToken()
     val artwork = core.getArtwork() ?: return Result.retry()
     val provider = ProviderContract.getProviderClient<MuzeillectArtProvider>(context)
     provider.addArtwork(artwork)

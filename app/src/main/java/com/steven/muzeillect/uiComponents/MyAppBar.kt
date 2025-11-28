@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -25,48 +26,42 @@ import com.steven.muzeillect.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyAppBar(
+  modifier: Modifier = Modifier,
   showBackButton: Boolean? = null,
   title: @Composable (() -> Unit) = {},
   onClick: (() -> Unit)? = null
 ) {
-
   val navController = LocalNavController.current
-  val canNavigateBack = navController.previousBackStackEntry != null
+  val showBackButton = showBackButton ?: (navController.previousBackStackEntry != null)
+  val onClick: () -> Unit = onClick ?: { navController.navigateUp() }
 
   TopAppBar(
     title = title,
+    modifier = modifier,
     navigationIcon = {
-      if (showBackButton ?: canNavigateBack) {
-        val description = stringResource(R.string.back)
-        val hapticFeedback = LocalHapticFeedback.current
-        val tooltipState = rememberTooltipState()
+      if (!showBackButton) return@TopAppBar
 
-        LaunchedEffect(tooltipState.isVisible) {
-          if (!tooltipState.isVisible) return@LaunchedEffect
-          hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-        }
+      val description = stringResource(R.string.back)
+      val hapticFeedback = LocalHapticFeedback.current
+      val tooltipState = rememberTooltipState()
 
-        TooltipBox(
-          positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            positioning = TooltipAnchorPosition.Below
-          ),
-          state = tooltipState,
-          tooltip = { PlainTooltip { Text(description) } },
-        ) {
-          IconButton(
-            onClick = {
-              if (onClick != null) {
-                onClick()
-              } else {
-                navController.navigateUp()
-              }
-            }
-          ) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = description
-            )
-          }
+      LaunchedEffect(tooltipState.isVisible) {
+        if (!tooltipState.isVisible) return@LaunchedEffect
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      }
+
+      TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+          positioning = TooltipAnchorPosition.Below
+        ),
+        state = tooltipState,
+        tooltip = { PlainTooltip { Text(description) } },
+      ) {
+        IconButton(onClick = onClick) {
+          Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = description
+          )
         }
       }
     },

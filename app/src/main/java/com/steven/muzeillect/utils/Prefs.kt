@@ -22,22 +22,25 @@ val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(na
 sealed class PrefsKey<T : Any, U>(
   private val rawKey: String,
   private val keyGenerator: (name: String) -> Preferences.Key<T>,
-  private val encoder: (value: U) -> T?,
-  private val decoder: (value: T?) -> U,
+  private val defaultValue: U,
+  private val encoder: (parsedValue: U) -> T?,
+  private val decoder: (rawValue: T) -> U,
 ) {
   object BlockList : PrefsKey<Set<String>, Set<String>>(
     rawKey = "pref_blacklist",
     keyGenerator = ::stringSetPreferencesKey,
-    encoder = { value -> value },
-    decoder = { value -> value ?: emptySet() }
+    defaultValue = emptySet(),
+    encoder = { parsedValue -> parsedValue },
+    decoder = { rawValue -> rawValue }
   )
 
   object SelectedQuality : PrefsKey<String, ImageQuality>(
     rawKey = "selected_quality",
+    defaultValue = ImageQuality.ANY,
     keyGenerator = ::stringPreferencesKey,
-    encoder = { value -> value.prefValue },
-    decoder = { value ->
-      ImageQuality.entries.find { it.prefValue == value }!!
+    encoder = { parsedValue -> parsedValue.prefValue },
+    decoder = { rawValue ->
+      ImageQuality.entries.find { it.prefValue == rawValue }!!
     }
   )
 
@@ -45,26 +48,31 @@ sealed class PrefsKey<T : Any, U>(
     object IsHD : PrefsKey<Boolean, Boolean>(
       rawKey = "pref_hd",
       keyGenerator = ::booleanPreferencesKey,
-      encoder = { value -> value },
-      decoder = { value -> value ?: false }
+      defaultValue = false,
+      encoder = { parsedValue -> parsedValue },
+      decoder = { rawValue -> rawValue }
     )
   }
 
   fun asDSKey(): Preferences.Key<T> = keyGenerator(rawKey)
 
   fun getFrom(prefs: Preferences): U {
-    val found = prefs[asDSKey()]
-    return decoder(found)
+    try {
+      val rawValue = prefs[asDSKey()]
+      return rawValue?.let { decoder(it) } ?: defaultValue
+    } catch (_: Exception) {
+      return defaultValue
+    }
   }
 
   fun setIn(prefs: MutablePreferences, value: U?) {
     val key = asDSKey()
     val rawValue = value?.let { this.encoder(it) }
-    if (rawValue == null) {
+    if (rawValue != null) {
+      prefs[key] = rawValue
+    } else {
       prefs.remove(key)
-      return
     }
-    prefs[key] = rawValue
   }
 }
 

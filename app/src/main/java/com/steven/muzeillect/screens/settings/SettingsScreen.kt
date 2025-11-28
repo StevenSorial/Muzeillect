@@ -6,10 +6,9 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.steven.muzeillect.R
 import com.steven.muzeillect.uiComponents.MyAppBar
 
@@ -31,22 +31,22 @@ fun SettingsScreen() {
       modifier = Modifier
         .fillMaxSize()
         .padding(padding)
-        .consumeWindowInsets(padding)
     ) {
 
       Image(
         painter = painterResource(R.drawable.logo_thick),
         contentDescription = "Logo",
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+          .offset(y = (-24).dp)
+          .weight(1f),
         colorFilter = ColorFilter.tint(colorResource(R.color.onBackground))
       )
-
-      Spacer(modifier = Modifier.weight(0.25f))
 
       SettingsColumn(
         modifier = Modifier
           .fillMaxWidth()
-          .weight(1f)
+          .weight(2f)
       )
     }
   }

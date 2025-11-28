@@ -8,7 +8,7 @@ enum class ImageQuality {
   HD,
   FULL_HD;
 
-  fun validateBitmap(bitmap: Bitmap): Boolean {
+  fun validateSize(bitmap: Bitmap): Boolean {
     Timber.d("Image height: ${bitmap.height}, width: ${bitmap.width}")
     val minimumPixels = when (this) {
       ANY -> 0.0

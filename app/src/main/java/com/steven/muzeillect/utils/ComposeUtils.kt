@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.steven.muzeillect.utils
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -5,10 +7,12 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 
-@Suppress("unused")
 inline fun Modifier.conditional(
   condition: Boolean,
   ifTrue: Modifier.() -> Modifier,
@@ -20,7 +24,24 @@ inline fun Modifier.conditional(
     ifFalse()
   }
   return then(newModifier)
+}
 
+@Composable
+fun Modifier.onDpSizeChanged(
+  onSizeChanged: (DpSize) -> Unit
+): Modifier {
+  val density = LocalDensity.current
+
+  return this.onSizeChanged { intSize ->
+    with(density) {
+      onSizeChanged(
+        DpSize(
+          width = intSize.width.toDp(),
+          height = intSize.height.toDp()
+        )
+      )
+    }
+  }
 }
 
 @Composable

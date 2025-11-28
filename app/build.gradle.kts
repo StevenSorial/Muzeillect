@@ -18,7 +18,7 @@ android {
     applicationId = "com.steven.muzeillect"
     minSdk = 23
     targetSdk = apiLevel
-    versionCode = 25
+    versionCode = 26
     versionName = "4.0"
   }
 
@@ -56,8 +56,9 @@ android {
     }
 
     all {
-      val completeId = "${defaultConfig.applicationId}${applicationIdSuffix ?: ""}"
-      manifestPlaceholders["appBundle"] = completeId
+      val appId = defaultConfig.applicationId
+      val suffix = applicationIdSuffix ?: ""
+      manifestPlaceholders["appBundle"] = "${appId}${suffix}"
     }
 
     buildFeatures {
