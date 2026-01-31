@@ -8,6 +8,7 @@ import coil3.ImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.steven.muzeillect.utils.BASE_URL
 import com.steven.muzeillect.utils.isValidImage
+import com.steven.muzeillect.utils.useOrNull
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -144,9 +145,9 @@ private fun OkHttpClient.Builder.addFallbackCertificateIfNeeded(context: Context
   val cf = CertificateFactory.getInstance("X.509")
 
   val certificateStream = context.resources.openRawResource(R.raw.isrgrootx1)
-  val certificate = certificateStream.use {
+  val certificate = certificateStream.useOrNull {
     cf.generateCertificate(it)
-  }
+  } ?: return this
 
   val handshakeCertificate = HandshakeCertificates.Builder()
     .addTrustedCertificate(certificate as X509Certificate)

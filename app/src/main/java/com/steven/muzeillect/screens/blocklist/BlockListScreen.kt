@@ -19,7 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,22 +26,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.SubcomposeAsyncImage
 import com.steven.muzeillect.NetworkClient
 import com.steven.muzeillect.R
 import com.steven.muzeillect.uiComponents.MyAppBar
 import com.steven.muzeillect.utils.copyWith
-import com.steven.muzeillect.utils.settingsDataStore
 
 @Composable
 fun BlockListScreen(
-  vm: BlockListViewModel = BlockListViewModel(LocalContext.current.settingsDataStore)
+  vm: BlockListViewModel = hiltViewModel()
 ) {
 
-  val uiState by vm.uiState.collectAsState()
+  val uiState by vm.uiState.collectAsStateWithLifecycle()
   vm.startsListening()
 
   Scaffold(
@@ -56,7 +55,8 @@ fun BlockListScreen(
       modifier = Modifier
         .padding(padding.copyWith(bottom = 0.dp)),
     ) {
-      val midDim = minOf(this.maxWidth, this.maxHeight)
+      val maxHeight = this.maxHeight
+      val midDim = minOf(this.maxWidth, maxHeight)
       val size = maxOf(midDim * 0.4f, 180.dp)
       val count = (this.maxWidth / size).toInt().coerceAtLeast(1)
 
@@ -69,7 +69,7 @@ fun BlockListScreen(
           columns = GridCells.Fixed(count),
           modifier = Modifier
             .fillMaxSize(),
-          contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
+          contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + (maxHeight / 6)),
           horizontalArrangement = Arrangement.spacedBy(0.dp),
           verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {

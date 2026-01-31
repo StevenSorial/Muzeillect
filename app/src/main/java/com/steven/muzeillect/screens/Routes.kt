@@ -1,13 +1,21 @@
 package com.steven.muzeillect.screens
 
 import androidx.compose.runtime.compositionLocalOf
-import androidx.navigation.NavController
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-val LocalNavController = compositionLocalOf<NavController> {
-  error("No NavController provided")
+val LocalNavBackStack = compositionLocalOf<NavBackStack<Routes>> {
+  error("No NavBackStack provided")
 }
 
-sealed class Routes(val routeName: String) {
-  data object Settings : Routes("settings")
-  data object BlockList : Routes("block_list")
+@Serializable
+sealed class Routes : NavKey {
+  @Serializable
+  data object Settings : Routes()
+
+  @Serializable
+  data object BlockList : Routes()
 }
+
+fun NavBackStack<*>?.hasOneOrMore(): Boolean = (this?.size ?: 0) > 1

@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.steven.muzeillect.NetworkClient
 import com.steven.muzeillect.utils.PrefsKey
 import com.steven.muzeillect.utils.tokenUrlForToken
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,13 +21,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.collections.indexOfFirst
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
 
-class BlockListViewModel(
+@HiltViewModel
+class BlockListViewModel @Inject constructor(
   private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
+
   private val _uiState = MutableStateFlow(BlockListState())
   val uiState: StateFlow<BlockListState> = _uiState.asStateFlow()
   private var loadJob: Job? = null
@@ -37,6 +41,12 @@ class BlockListViewModel(
         handlePrefs(PrefsKey.BlockList.getFrom(prefs))
       }
     }
+  }
+
+  override fun onCleared() {
+    Timber.i("BlockListViewModel cleared")
+    loadJob?.cancel()
+    super.onCleared()
   }
 
   fun refresh() {

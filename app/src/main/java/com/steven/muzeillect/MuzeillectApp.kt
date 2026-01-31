@@ -7,8 +7,10 @@ import androidx.core.app.NotificationManagerCompat
 import timber.log.Timber
 import com.steven.muzeillect.utils.PreferenceMigrator
 import com.steven.muzeillect.utils.appScope
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
 
+@HiltAndroidApp
 class MuzeillectApp : Application() {
 
   override fun onCreate() {

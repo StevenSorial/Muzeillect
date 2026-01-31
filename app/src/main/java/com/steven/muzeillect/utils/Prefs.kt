@@ -3,28 +3,37 @@ package com.steven.muzeillect.utils
 import android.content.Context
 import androidx.core.content.edit
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.MutablePreferences
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.preference.PreferenceManager
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import kotlin.collections.component1
 import kotlin.collections.component2
 
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DataStoreModule {
+
+  @Provides
+  @Singleton
+  fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+    return context.settingsDataStore
+  }
+}
 
 sealed class PrefsKey<T : Any, U>(
   private val rawKey: String,
   private val keyGenerator: (name: String) -> Preferences.Key<T>,
   private val defaultValue: U,
   private val encoder: (parsedValue: U) -> T?,
-  private val decoder: (rawValue: T) -> U,
+  private val decoder: (rawValue: T) -> U?,
 ) {
   object BlockList : PrefsKey<Set<String>, Set<String>>(
     rawKey = "pref_blacklist",
@@ -40,7 +49,7 @@ sealed class PrefsKey<T : Any, U>(
     keyGenerator = ::stringPreferencesKey,
     encoder = { parsedValue -> parsedValue.prefValue },
     decoder = { rawValue ->
-      ImageQuality.entries.find { it.prefValue == rawValue }!!
+      ImageQuality.entries.firstOrNull { it.prefValue == rawValue }
     }
   )
 
@@ -59,7 +68,8 @@ sealed class PrefsKey<T : Any, U>(
   fun getFrom(prefs: Preferences): U {
     try {
       val rawValue = prefs[asDSKey()]
-      return rawValue?.let { decoder(it) } ?: defaultValue
+      val decodedValue = rawValue?.let { decoder(it) }
+      return decodedValue ?: defaultValue
     } catch (_: Exception) {
       return defaultValue
     }

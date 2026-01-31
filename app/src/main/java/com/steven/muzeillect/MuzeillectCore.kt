@@ -2,15 +2,16 @@ package com.steven.muzeillect
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.provider.Artwork
 import com.steven.muzeillect.utils.ImageQuality
 import com.steven.muzeillect.utils.PrefsKey
-import com.steven.muzeillect.utils.decodeBitmapOrNull
 import com.steven.muzeillect.utils.isValidImage
 import com.steven.muzeillect.utils.settingsDataStore
 import com.steven.muzeillect.utils.tokenUrlForToken
+import com.steven.muzeillect.utils.useOrNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -68,7 +69,9 @@ class MuzeillectCore(private val context: Context) {
       val selectedQuality = selectedQualityFlow.first()
       if (selectedQuality == ImageQuality.ANY) return@getImageData finalUrl
       Timber.i("Checking Image Size")
-      val bitmap: Bitmap? = response.body.byteStream().decodeBitmapOrNull()
+      val bitmap: Bitmap? = response.body.byteStream().useOrNull {
+        BitmapFactory.decodeStream(it)
+      }
       if (bitmap == null || !selectedQuality.validateSize(bitmap)) {
         Timber.i("Resolution is low")
         return@getImageData null

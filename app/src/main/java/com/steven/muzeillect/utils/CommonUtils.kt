@@ -2,8 +2,6 @@
 
 package com.steven.muzeillect.utils
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.core.app.ComponentActivity
@@ -14,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.InputStream
+import java.io.Closeable
 
 val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -34,9 +32,9 @@ fun ComponentActivity.showToast(message: String) {
   }
 }
 
-fun InputStream.decodeBitmapOrNull(): Bitmap? {
+inline fun <T : Closeable?, R> T.useOrNull(block: (T) -> R): R? {
   try {
-    return use { BitmapFactory.decodeStream(it) }
+    return use(block)
   } catch (_: Exception) {
     return null
   }

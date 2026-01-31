@@ -1,6 +1,5 @@
 package com.steven.muzeillect.uiComponents
 
-import com.steven.muzeillect.screens.LocalNavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +21,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import com.steven.muzeillect.R
+import com.steven.muzeillect.screens.LocalNavBackStack
+import com.steven.muzeillect.screens.hasOneOrMore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,9 +32,9 @@ fun MyAppBar(
   title: @Composable (() -> Unit) = {},
   onClick: (() -> Unit)? = null
 ) {
-  val navController = LocalNavController.current
-  val showBackButton = showBackButton ?: (navController.previousBackStackEntry != null)
-  val onClick: () -> Unit = onClick ?: { navController.navigateUp() }
+  val backStack = LocalNavBackStack.current
+  val showBackButton = showBackButton ?: backStack.hasOneOrMore()
+  val onClick: () -> Unit = onClick ?: { backStack.removeLastOrNull() }
 
   TopAppBar(
     title = title,

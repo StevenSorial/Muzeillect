@@ -3,7 +3,6 @@
 
 package com.steven.muzeillect.screens.settings
 
-import com.steven.muzeillect.screens.LocalNavController
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import com.steven.muzeillect.R
+import com.steven.muzeillect.screens.LocalNavBackStack
 import com.steven.muzeillect.screens.Routes
 import com.steven.muzeillect.utils.ImageQuality
 import com.steven.muzeillect.utils.PrefsKey
@@ -45,13 +45,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsColumn(modifier: Modifier = Modifier) {
-  val navController = LocalNavController.current
+  val backStack = LocalNavBackStack.current
 
   Column(modifier = modifier) {
     ImageQualityPreference()
     NavigationTile(
       title = stringResource(R.string.action_blocked_images),
-      onClick = { navController.navigate(Routes.BlockList.routeName) },
+      onClick = { backStack.add(Routes.BlockList) },
     )
   }
 }
